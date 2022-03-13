@@ -11,4 +11,4 @@ gen: Iterable[pywikibot.Page] = pagegenerators.CategorizedPageGenerator(cat)
 
 for page in gen:
     page.text = re.sub(r"\| *pmc *= *pmc", r"|pmc=", page.text, flags=re.IGNORECASE)
-    page.save("Fixing PMC format", minor=True)
+    page.save("Fixing PMC format ([[User:BsoykaBot/Task 1|Task 1]])", minor=True)
