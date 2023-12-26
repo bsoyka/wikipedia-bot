@@ -1,6 +1,7 @@
 user-config.py
 user-password.py
 
+logs/
 apicache-py3/
 pywikibot.lwp
 throttle.ctrl
