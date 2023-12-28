@@ -1,6 +1,9 @@
-# BsoykaBot security policy
+# BsoykaBot Security Policy
 
-## Supported versions
+[My organization-wide security policy](https://github.com/bsoyka/policy/blob/main/security-policy.md)
+applies here. In addition, the following takes precedence for this repository.
+
+## Supported Versions
 
 Only
 [the most current version](https://github.com/bsoyka/wikipedia-bot/tree/main) is
@@ -11,9 +14,12 @@ supported and deployed.
 | `main` branch | :white_check_mark: |
 |  All others   |        :x:         |
 
-## Reporting a vulnerability
+## Official Channels
 
-Security concerns can be privately reported using these methods:
+Security concerns can be privately reported using these methods.
+
+Please provide all relevant information. The more details you provide, the
+easier it will be for me to triage and fix the issue.
 
 1. Anyone with a GitHub account can create a security report using
    [this link](https://github.com/bsoyka/wikipedia-bot/security/advisories/new).
