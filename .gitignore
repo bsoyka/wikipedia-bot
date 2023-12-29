@@ -3,5 +3,5 @@ user-password.py
 
 logs/
 apicache-py3/
-pywikibot.lwp
+*.lwp
 throttle.ctrl
