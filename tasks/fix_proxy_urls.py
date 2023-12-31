@@ -27,6 +27,7 @@ def process_page(page: pywikibot.Page) -> None:
 
 
 def main():
+    """Main script function."""
     pages_to_edit: set[pywikibot.Page] = set()
 
     for proxy_string in REPLACEMENTS:
