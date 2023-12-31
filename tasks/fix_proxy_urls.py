@@ -43,7 +43,7 @@ def process_page(page: pywikibot.Page) -> None:
         page.text = text
         page.save(
             summary="Replacing [[WP:TWL|TWL]] proxy links ([[User:BsoykaBot/Task 2|Task 2]])",
-            minor=False,
+            minor=True,
         )
 
 
