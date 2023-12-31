@@ -12,6 +12,20 @@ REPLACEMENTS = {
 }
 
 
+def process_page(page: pywikibot.Page) -> None:
+    """Processes a page."""
+    text = page.text
+    for proxy_string, replacement in REPLACEMENTS.items():
+        text = text.replace(proxy_string, replacement)
+
+    if text != page.text:
+        page.text = text
+        page.save(
+            summary="Replacing [[WP:TWL|TWL]] proxy links ([[User:BsoykaBot/Task 2|Task 2]])",
+            minor=False,
+        )
+
+
 def main():
     pages_to_edit: set[pywikibot.Page] = set()
 
@@ -27,13 +41,7 @@ def main():
         pages_to_edit.update(new_pages)
 
     for page in pages_to_edit:
-        for find, replace in REPLACEMENTS.items():
-            page.text = page.text.replace(find, replace)
-
-        page.save(
-            "Replacing [[WP:TWL|TWL]] proxy links ([[User:BsoykaBot/Task 2|Task 2]])",
-            minor=True,
-        )
+        process_page(page)
 
 
 if __name__ == "__main__":
