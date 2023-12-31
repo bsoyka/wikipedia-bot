@@ -1,3 +1,8 @@
+"""Replaces proxy domains from Wikipedia Library.
+
+See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_2 for more info.
+"""
+
 import pywikibot
 from pywikibot import pagegenerators
 
