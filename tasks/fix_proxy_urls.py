@@ -3,8 +3,29 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_2 for more info.
 """
 
+import logging
+
 import pywikibot
+from loguru import logger
 from pywikibot import pagegenerators
+
+
+class InterceptHandler(logging.Handler):
+    """Intercept standard logging messages toward Loguru."""
+
+    def emit(self, record):
+        """Send standard logging messages to Loguru."""
+        # Get corresponding Loguru level if it exists.
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+
+        # Forward the message
+        logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
+
+
+logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 REPLACEMENTS = {
     "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
