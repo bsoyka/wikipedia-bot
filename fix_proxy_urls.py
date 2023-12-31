@@ -2,7 +2,8 @@ import pywikibot
 from pywikibot import pagegenerators
 
 REPLACEMENTS = {
-    "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com"
+    "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
+    "www.newspapers.com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
 }
 
 site = pywikibot.Site()
