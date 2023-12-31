@@ -13,8 +13,6 @@ REPLACEMENTS = {
 
 
 def main():
-    site = pywikibot.Site()
-
     pages_to_edit: set[pywikibot.Page] = set()
 
     for proxy_string in REPLACEMENTS:
