@@ -1,7 +1,7 @@
 # See https://wikitech.wikimedia.org/wiki/Help:Toolforge/Jobs_framework
 ---
 - name: task-2
-  command: ~/wikipedia-bot && ./pyvenv/bin/python3 ./tasks/fix_proxy_urls.py
+  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 ./tasks/fix_proxy_urls.py
   image: python3.11
   schedule: "@daily"
   emails: onfailure
