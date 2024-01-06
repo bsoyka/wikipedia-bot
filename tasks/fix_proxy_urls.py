@@ -30,6 +30,10 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 REPLACEMENTS = {
     "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
     "www.newspapers.com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
+    "doi-org.wikipedialibrary.idm.oclc.org": "doi.org",
+    "doi.org.wikipedialibrary.idm.oclc.org": "doi.org",
+    "www-jstor-org.wikipedialibrary.idm.oclc.org": "www.jstor.org",
+    "www.jstor.org.wikipedialibrary.idm.oclc.org": "www.jstor.org",
 }
 
 
