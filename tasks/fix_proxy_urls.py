@@ -9,6 +9,8 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
+__version__ = "0.1.0"
+
 
 class InterceptHandler(logging.Handler):
     """Intercept standard logging messages toward Loguru."""
@@ -46,7 +48,7 @@ def process_page(page: pywikibot.Page) -> None:
     if text != page.text:
         page.text = text
         page.save(
-            summary="Replacing [[WP:TWL|TWL]] proxy links ([[User:BsoykaBot/Task 2|Task 2]])",
+            summary=f"Replacing [[WP:TWL|TWL]] proxy links ([[User:BsoykaBot/Task 2|Task 2]], v{__version__})",
             minor=True,
         )
 
