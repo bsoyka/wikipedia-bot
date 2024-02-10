@@ -36,6 +36,8 @@ REPLACEMENTS = {
     "doi.org.wikipedialibrary.idm.oclc.org": "doi.org",
     "www-jstor-org.wikipedialibrary.idm.oclc.org": "www.jstor.org",
     "www.jstor.org.wikipedialibrary.idm.oclc.org": "www.jstor.org",
+    "www-loebclassics-com.wikipedialibrary.idm.oclc.org": "www.loebclassics.com",
+    "www.loebclassics.com.wikipedialibrary.idm.oclc.org": "www.loebclassics.com",
 }
 
 
