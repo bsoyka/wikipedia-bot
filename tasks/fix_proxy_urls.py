@@ -34,6 +34,9 @@ DOMAINS = {
     "doi.org",
     "www.jstor.org",
     "www.loebclassics.com",
+    "www.cambridge.org",
+    "onlinelibrary.wiley.com",
+    "heinonline.org",
 }
 
 REPLACEMENTS = {}
