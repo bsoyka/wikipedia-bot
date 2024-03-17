@@ -9,7 +9,7 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 
 class InterceptHandler(logging.Handler):
