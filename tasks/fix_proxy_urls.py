@@ -29,16 +29,18 @@ class InterceptHandler(logging.Handler):
 
 logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
-REPLACEMENTS = {
-    "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
-    "www.newspapers.com.wikipedialibrary.idm.oclc.org": "www.newspapers.com",
-    "doi-org.wikipedialibrary.idm.oclc.org": "doi.org",
-    "doi.org.wikipedialibrary.idm.oclc.org": "doi.org",
-    "www-jstor-org.wikipedialibrary.idm.oclc.org": "www.jstor.org",
-    "www.jstor.org.wikipedialibrary.idm.oclc.org": "www.jstor.org",
-    "www-loebclassics-com.wikipedialibrary.idm.oclc.org": "www.loebclassics.com",
-    "www.loebclassics.com.wikipedialibrary.idm.oclc.org": "www.loebclassics.com",
+DOMAINS = {
+    "www.newspapers.com",
+    "doi.org",
+    "www.jstor.org",
+    "www.loebclassics.com",
 }
+
+REPLACEMENTS = {}
+
+for domain in DOMAINS:
+    REPLACEMENTS[domain.replace(".", "-") + ".wikipedialibrary.idm.oclc.org"] = domain
+    REPLACEMENTS[domain + ".wikipedialibrary.idm.oclc.org"] = domain
 
 
 def process_page(page: pywikibot.Page) -> None:
