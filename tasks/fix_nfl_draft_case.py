@@ -92,8 +92,8 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
     )
 
     for template in templates:
-        # Fix capitalization in {{Main|...}} and {{See also|...}}
-        if template.name.matches({"Main", "See also"}):
+        # Fix capitalization in {{Main|...}}, {{See also|...}}, etc.
+        if template.name.matches({"Main", "See also", "Further"}):
             for param in template.params:
                 if re.match(r"\d{4} NFL Draft", str(param.value)):
                     # Check if the link title is a redirect
