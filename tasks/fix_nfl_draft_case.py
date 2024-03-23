@@ -133,7 +133,7 @@ def main():
         page.save(
             "Fixing miscapitalization of NFL Draft links "
             "([[User:BsoykaBot/Task 3|Task 3]], "
-            f"{__version__},"
+            f"{__version__}, "
             "[[User talk:BsoykaBot|report errors]])"
         )
 
