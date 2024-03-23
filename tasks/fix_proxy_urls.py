@@ -47,7 +47,7 @@ for domain in DOMAINS:
 
 
 def process_page(page: pywikibot.Page) -> None:
-    """Processes a page."""
+    """Process a page."""
     text = page.text
     for proxy_string, replacement in REPLACEMENTS.items():
         text = text.replace(proxy_string, replacement)
