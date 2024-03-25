@@ -13,6 +13,8 @@ from pywikibot import pagegenerators
 
 __version__ = "0.3.0"
 
+PAGES_PER_BATCH = 1000
+
 
 class InterceptHandler(logging.Handler):
     """Intercept standard logging messages toward Loguru."""
@@ -33,12 +35,16 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 
 def get_redirect_pages() -> set[pywikibot.Page]:
-    """Make a set of all capitalized NFL Draft pages from 1936-2024."""
+    """Make a set of all capitalized NFL Draft pages to change."""
     site = pywikibot.Site("en", "wikipedia")
 
     # use PagesFromTitlesGenerator
-    titles = [f"{year} NFL Draft" for year in range(1936, 2025)]
-    pages = pagegenerators.PagesFromTitlesGenerator(titles)
+    titles = {f"{year} NFL Draft" for year in range(1936, 2025)}
+    pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
+
+    pages.update(
+        pagegenerators.SearchPageGenerator("intitle:/List of .+ in the NFL Draft/")
+    )
 
     return set(pages)
 
@@ -55,7 +61,7 @@ def get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot
 
 
 def fix_links_in_page(page: pywikibot.Page) -> str:
-    """Fix miscapitalized links to "XXXX NFL Draft" redirects in a page."""
+    """Fix miscapitalized links to "NFL Draft" redirects in a page."""
     non_cosmetic_changes = False
 
     text = page.text
@@ -67,7 +73,9 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
         old_link_text: mwparserfromhell.Wikicode | None = link.text
 
         # Match link title to regex for "YEAR NFL Draft"
-        if re.match(r"\d{4} NFL Draft", str(link.title)):
+        if re.match(r"\d{4} NFL Draft", str(link.title)) or re.match(
+            r"List of .+ in the NFL Draft", str(link.title)
+        ):
             # Check if the link title is a redirect
             target = pywikibot.Page(page.site, link.title)
             if target.isRedirectPage():
@@ -95,7 +103,9 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
         # Fix capitalization in {{Main|...}}, {{See also|...}}, etc.
         if template.name.matches({"Main", "See also", "Further"}):
             for param in template.params:
-                if re.match(r"\d{4} NFL Draft", str(param.value)):
+                if re.match(r"\d{4} NFL Draft", str(param.value)) or re.match(
+                    r"List of .+ in the NFL Draft", str(param.value)
+                ):
                     # Check if the link title is a redirect
                     target = pywikibot.Page(page.site, param.value)
                     if target.isRedirectPage():
@@ -121,7 +131,7 @@ def main():
 
     # Get links from file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
-        link_titles = f.readlines()[:500]
+        link_titles = f.readlines()[:PAGES_PER_BATCH]
         links_to_redirects = [
             pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
             for title in link_titles
@@ -139,7 +149,7 @@ def main():
 
     # Remove the lines read from the file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
-        lines = f.readlines()[500:]
+        lines = f.readlines()[PAGES_PER_BATCH:]
 
     with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
         f.writelines(lines)
