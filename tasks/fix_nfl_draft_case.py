@@ -11,9 +11,9 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-__version__ = "0.3.0"
+from ._utils import create_edit_summary
 
-PAGES_PER_BATCH = 1000
+PAGES_PER_BATCH = 1_000
 
 
 class InterceptHandler(logging.Handler):
@@ -36,9 +36,6 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 def get_redirect_pages() -> set[pywikibot.Page]:
     """Make a set of all capitalized NFL Draft pages to change."""
-    site = pywikibot.Site("en", "wikipedia")
-
-    # use PagesFromTitlesGenerator
     titles = {f"{year} NFL Draft" for year in range(1936, 2025)}
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
 
@@ -51,7 +48,6 @@ def get_redirect_pages() -> set[pywikibot.Page]:
 
 def get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot.Page]:
     """Get all pages that link to the redirect pages."""
-    site = pywikibot.Site("en", "wikipedia")
     backlinks = set()
 
     for redirect in redirect_pages:
@@ -120,14 +116,17 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
     return text
 
 
-def main():
+def main(*, create_file: bool = False):
     """Main script function."""
-    # redirect_pages = get_redirect_pages()
-    # links_to_redirects = get_links_to_redirects(redirect_pages)
-    # print(len(links_to_redirects))
-    # with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
-    #     for page in links_to_redirects:
-    #         f.write(f"{page.title()}\n")
+    if create_file:
+        redirect_pages = get_redirect_pages()
+        links_to_redirects = get_links_to_redirects(redirect_pages)
+        print(len(links_to_redirects))
+        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
+            for page in links_to_redirects:
+                f.write(f"{page.title()}\n")
+
+        return
 
     # Get links from file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
@@ -138,14 +137,23 @@ def main():
         ]
 
     for page in links_to_redirects:
+        old_text = page.text
+
         text = fix_links_in_page(page)
         page.text = text
-        page.save(
-            "Fixing miscapitalization of NFL Draft links "
-            "([[User:BsoykaBot/Task 3|Task 3]], "
-            f"{__version__}, "
-            "[[User talk:BsoykaBot|report errors]])"
-        )
+
+        if text == old_text:
+            continue
+
+        try:
+            page.save(
+                summary=create_edit_summary(
+                    "Fixing miscapitalization of NFL Draft links", 3
+                ),
+                minor=True,
+            )
+        except pywikibot.exceptions.OtherPageSaveError as error:
+            logger.warning(f"Skipping page {page.title()}: {error}")
 
     # Remove the lines read from the file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
