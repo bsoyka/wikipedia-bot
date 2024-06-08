@@ -13,7 +13,7 @@ from pywikibot import pagegenerators
 
 __version__ = "0.3.0"
 
-PAGES_PER_BATCH = 1000
+PAGES_PER_BATCH = 1_000
 
 
 class InterceptHandler(logging.Handler):
