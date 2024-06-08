@@ -1,12 +1,12 @@
 # See https://wikitech.wikimedia.org/wiki/Help:Toolforge/Jobs_framework
 ---
 - name: task-2
-  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 ./tasks/fix_proxy_urls.py
+  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 -m tasks fix-proxy-urls
   image: python3.11
   schedule: "@daily"
   emails: onfailure
 - name: task-3
-  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 ./tasks/fix_nfl_draft_case.py
+  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 -m tasks fix-nfl-draft-case
   image: python3.11
   schedule: "@daily"
   emails: onfailure

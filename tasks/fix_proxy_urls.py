@@ -9,7 +9,7 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-from tasks._utils import create_edit_summary
+from ._utils import create_edit_summary
 
 __version__ = "0.3.0"
 

@@ -3,7 +3,6 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_3 for more info.
 """
 
-import argparse
 import logging
 import re
 
@@ -12,7 +11,7 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-from tasks._utils import create_edit_summary
+from ._utils import create_edit_summary
 
 __version__ = "0.3.0"
 
@@ -119,16 +118,9 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
     return text
 
 
-def main():
+def main(*, create_file: bool = False):
     """Main script function."""
-    parser = argparse.ArgumentParser(description=__doc__)
-
-    parser.add_argument(
-        "-c", "--create-file", action="store_true", help="Create a file of links to fix"
-    )
-    args = parser.parse_args()
-
-    if args.create_file:
+    if create_file:
         redirect_pages = get_redirect_pages()
         links_to_redirects = get_links_to_redirects(redirect_pages)
         print(len(links_to_redirects))
