@@ -37,9 +37,6 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 def get_redirect_pages() -> set[pywikibot.Page]:
     """Make a set of all capitalized NFL Draft pages to change."""
-    site = pywikibot.Site("en", "wikipedia")
-
-    # use PagesFromTitlesGenerator
     titles = {f"{year} NFL Draft" for year in range(1936, 2025)}
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
 
@@ -52,7 +49,6 @@ def get_redirect_pages() -> set[pywikibot.Page]:
 
 def get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot.Page]:
     """Get all pages that link to the redirect pages."""
-    site = pywikibot.Site("en", "wikipedia")
     backlinks = set()
 
     for redirect in redirect_pages:
