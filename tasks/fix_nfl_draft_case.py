@@ -147,12 +147,15 @@ def main(*, create_file: bool = False):
         if text == old_text:
             continue
 
-        page.save(
-            summary=create_edit_summary(
-                "Fixing miscapitalization of NFL Draft links", 3, __version__
-            ),
-            minor=True,
-        )
+        try:
+            page.save(
+                summary=create_edit_summary(
+                    "Fixing miscapitalization of NFL Draft links", 3, __version__
+                ),
+                minor=True,
+            )
+        except pywikibot.exceptions.OtherPageSaveError as error:
+            logger.warning(f"Skipping page {page.title()}: {error}")
 
     # Remove the lines read from the file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:

@@ -56,12 +56,16 @@ def process_page(page: pywikibot.Page) -> None:
 
     if text != page.text:
         page.text = text
-        page.save(
-            summary=create_edit_summary(
-                "Replacing [[WP:TWL|TWL]] proxy links", 2, __version__
-            ),
-            minor=True,
-        )
+
+        try:
+            page.save(
+                summary=create_edit_summary(
+                    "Replacing [[WP:TWL|TWL]] proxy links", 2, __version__
+                ),
+                minor=True,
+            )
+        except pywikibot.exceptions.OtherPageSaveError as error:
+            logger.warning(f"Skipping page {page.title()}: {error}")
 
 
 def main():
