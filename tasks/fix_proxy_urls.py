@@ -11,8 +11,6 @@ from pywikibot import pagegenerators
 
 from ._utils import create_edit_summary
 
-__version__ = "0.3.0"
-
 
 class InterceptHandler(logging.Handler):
     """Intercept standard logging messages toward Loguru."""
@@ -59,9 +57,7 @@ def process_page(page: pywikibot.Page) -> None:
 
         try:
             page.save(
-                summary=create_edit_summary(
-                    "Replacing [[WP:TWL|TWL]] proxy links", 2, __version__
-                ),
+                summary=create_edit_summary("Replacing [[WP:TWL|TWL]] proxy links", 2),
                 minor=True,
             )
         except pywikibot.exceptions.OtherPageSaveError as error:

@@ -13,8 +13,6 @@ from pywikibot import pagegenerators
 
 from ._utils import create_edit_summary
 
-__version__ = "0.3.0"
-
 PAGES_PER_BATCH = 1_000
 
 
@@ -150,7 +148,7 @@ def main(*, create_file: bool = False):
         try:
             page.save(
                 summary=create_edit_summary(
-                    "Fixing miscapitalization of NFL Draft links", 3, __version__
+                    "Fixing miscapitalization of NFL Draft links", 3
                 ),
                 minor=True,
             )
