@@ -3,6 +3,7 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_3 for more info.
 """
 
+import argparse
 import logging
 import re
 
@@ -122,12 +123,22 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
 
 def main():
     """Main script function."""
-    # redirect_pages = get_redirect_pages()
-    # links_to_redirects = get_links_to_redirects(redirect_pages)
-    # print(len(links_to_redirects))
-    # with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
-    #     for page in links_to_redirects:
-    #         f.write(f"{page.title()}\n")
+    parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument(
+        "-c", "--create-file", action="store_true", help="Create a file of links to fix"
+    )
+    args = parser.parse_args()
+
+    if args.create_file:
+        redirect_pages = get_redirect_pages()
+        links_to_redirects = get_links_to_redirects(redirect_pages)
+        print(len(links_to_redirects))
+        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
+            for page in links_to_redirects:
+                f.write(f"{page.title()}\n")
+
+        return
 
     # Get links from file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
