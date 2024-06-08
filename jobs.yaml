@@ -5,3 +5,8 @@
   image: python3.11
   schedule: "@daily"
   emails: onfailure
+- name: task-3
+  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 ./tasks/fix_nfl_draft_case.py
+  image: python3.11
+  schedule: "@daily"
+  emails: onfailure
