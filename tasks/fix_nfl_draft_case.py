@@ -12,6 +12,8 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
+from tasks._utils import create_edit_summary
+
 __version__ = "0.3.0"
 
 PAGES_PER_BATCH = 1_000
@@ -154,10 +156,9 @@ def main():
             continue
 
         page.save(
-            "Fixing miscapitalization of NFL Draft links "
-            "([[User:BsoykaBot/Task 3|Task 3]], "
-            f"{__version__}, "
-            "[[User talk:BsoykaBot|report errors]])"
+            summary=create_edit_summary(
+                "Fixing miscapitalization of NFL Draft links", 3, __version__
+            ),
             minor=True,
         )
 
