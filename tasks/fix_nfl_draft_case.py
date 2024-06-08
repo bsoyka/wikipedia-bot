@@ -158,6 +158,7 @@ def main():
             "([[User:BsoykaBot/Task 3|Task 3]], "
             f"{__version__}, "
             "[[User talk:BsoykaBot|report errors]])"
+            minor=True,
         )
 
     # Remove the lines read from the file
