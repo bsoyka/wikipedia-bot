@@ -138,8 +138,14 @@ def main():
         ]
 
     for page in links_to_redirects:
+        old_text = page.text
+
         text = fix_links_in_page(page)
         page.text = text
+
+        if text == old_text:
+            continue
+
         page.save(
             "Fixing miscapitalization of NFL Draft links "
             "([[User:BsoykaBot/Task 3|Task 3]], "
