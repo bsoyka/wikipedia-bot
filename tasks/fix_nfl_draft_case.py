@@ -148,7 +148,7 @@ def main(*, create_file: bool = False):
         try:
             page.save(
                 summary=create_edit_summary(
-                    "Fixing miscapitalization of NFL Draft links", 3
+                    "Fixing miscapitalization of NFL draft links", 3
                 ),
                 minor=True,
             )
