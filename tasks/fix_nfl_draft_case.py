@@ -130,13 +130,18 @@ def main(*, create_file: bool = False):
 
     # Get links from file
     with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
-        link_titles = f.readlines()[:PAGES_PER_BATCH]
+        link_titles = f.readlines()
         links_to_redirects = [
             pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
             for title in link_titles
         ]
 
+    edited_pages = 0
+
     for page in links_to_redirects:
+        if edited_pages >= PAGES_PER_BATCH:
+            break
+
         old_text = page.text
 
         text = fix_links_in_page(page)
@@ -152,6 +157,7 @@ def main(*, create_file: bool = False):
                 ),
                 minor=True,
             )
+            edited_pages += 1
         except pywikibot.exceptions.OtherPageSaveError as error:
             logger.warning(f"Skipping page {page.title()}: {error}")
 
