@@ -1,0 +1,30 @@
+name: Deploy to Toolforge
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Deploy to SSH server
+    runs-on: ubuntu-latest
+    environment:
+        name: production
+        url: https://en.wikipedia.org/wiki/User:BsoykaBot
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run deployment script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: login.toolforge.org
+          username: ${{ secrets.TOOLFORGE_USERNAME }}
+          key: ${{ secrets.TOOLFORGE_KEY }}
+          port: 22
+          request_pty: true
+          script_stop: true
+          script: |
+            become ${{ vars.TOOLFORGE_TOOL }} git -C "${{ vars.TOOLFORGE_DIRECTORY }}" pull
+            become ${{ vars.TOOLFORGE_TOOL }} toolforge jobs load "${{ vars.TOOLFORGE_DIRECTORY }}/jobs.yaml"
