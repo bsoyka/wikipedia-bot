@@ -10,3 +10,8 @@
   image: python3.11
   schedule: "@daily"
   emails: onfailure
+- name: logrotate
+  command: logrotate -v $TOOL_DATA_DIR/logrotate-all.conf --state $TOOL_DATA_DIR/logrotate-all.state
+  image: mariadb
+  schedule: "@daily"
+  emails: onfailure
