@@ -21,6 +21,10 @@ class InterceptHandler(logging.Handler):
 
     def emit(self, record):
         """Send standard logging messages to Loguru."""
+        # Ignore DEBUG level messages
+        if record.levelno < logging.INFO:
+            return
+
         # Get corresponding Loguru level if it exists.
         try:
             level = logger.level(record.levelname).name
