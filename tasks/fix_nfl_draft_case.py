@@ -44,7 +44,9 @@ def get_redirect_pages() -> set[pywikibot.Page]:
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
 
     pages.update(
-        pagegenerators.SearchPageGenerator("intitle:/List of .+ in the NFL Draft/")
+        pagegenerators.SearchPageGenerator(
+            "intitle:/List of .+ in the NFL Draft/", namespaces=[0]
+        )
     )
 
     return set(pages)
