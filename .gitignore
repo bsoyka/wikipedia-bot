@@ -5,6 +5,7 @@
 user-config.py
 user-password.py
 
+apicache/
 apicache-py3/
 *.lwp
 throttle.ctrl
