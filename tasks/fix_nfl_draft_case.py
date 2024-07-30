@@ -171,7 +171,7 @@ def main(*, create_file: bool = False):
 
         # Update the links file
         with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
-            f.writelines(f"{page.title()}" for page in links_to_redirects)
+            f.writelines([f"{page.title()}" for page in links_to_redirects])
 
 
 if __name__ == "__main__":
