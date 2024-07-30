@@ -144,7 +144,9 @@ def main(*, create_file: bool = False):
 
     edited_pages = 0
 
-    for page in links_to_redirects:
+    while len(links_to_redirects) > 0:
+        page = links_to_redirects.pop(0)
+
         if edited_pages >= PAGES_PER_BATCH:
             break
 
@@ -167,12 +169,9 @@ def main(*, create_file: bool = False):
         except pywikibot.exceptions.OtherPageSaveError as error:
             logger.warning(f"Skipping page {page.title()}: {error}")
 
-    # Remove the lines read from the file
-    with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
-        lines = f.readlines()[PAGES_PER_BATCH:]
-
-    with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
-        f.writelines(lines)
+        # Update the links file
+        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
+            f.writelines(f"{page.title()}" for page in links_to_redirects)
 
 
 if __name__ == "__main__":
