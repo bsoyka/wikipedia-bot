@@ -129,8 +129,7 @@ def main(*, create_file: bool = False):
         links_to_redirects = get_links_to_redirects(redirect_pages)
         print(len(links_to_redirects))
         with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
-            for page in links_to_redirects:
-                f.write(f"{page.title()}\n")
+            f.write("\n".join(page.title() for page in links_to_redirects))
 
         return
 
