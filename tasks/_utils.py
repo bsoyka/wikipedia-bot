@@ -3,7 +3,7 @@
 from . import __version__
 
 
-def create_edit_summary(edits: str, task: int) -> str:
+def create_edit_summary(edits: str, *, task: int) -> str:
     """Create an edit summary."""
     return (
         f"{edits} "

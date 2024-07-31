@@ -57,7 +57,9 @@ def process_page(page: pywikibot.Page) -> None:
 
         try:
             page.save(
-                summary=create_edit_summary("Replacing [[WP:TWL|TWL]] proxy links", 2),
+                summary=create_edit_summary(
+                    "Replacing [[WP:TWL|TWL]] proxy links", task=2
+                ),
                 minor=True,
             )
         except pywikibot.exceptions.OtherPageSaveError as error:
