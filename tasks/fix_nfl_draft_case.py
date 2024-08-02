@@ -126,10 +126,17 @@ def main(*, create_file: bool = False):
     """Main script function."""
     if create_file:
         redirect_pages = get_redirect_pages()
+        logger.info(f"Found {len(redirect_pages)} redirect pages")
+
         links_to_redirects = get_links_to_redirects(redirect_pages)
-        print(len(links_to_redirects))
+        logger.info(f"Found {len(links_to_redirects)} links to redirect pages")
+
         with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
             f.write("\n".join(page.title() for page in links_to_redirects))
+
+        logger.success(
+            "Successfully created links_to_redirects.txt with links to redirect pages"
+        )
 
         return
 
