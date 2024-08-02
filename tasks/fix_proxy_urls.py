@@ -4,6 +4,8 @@ See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_2 for more info.
 """
 
 import logging
+from pathlib import Path
+from urllib.parse import urlparse
 
 import pywikibot
 from loguru import logger
@@ -29,28 +31,52 @@ class InterceptHandler(logging.Handler):
 
 logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
-DOMAINS = {
-    "www.newspapers.com",
-    "doi.org",
-    "www.jstor.org",
-    "www.loebclassics.com",
-    "www.cambridge.org",
-    "onlinelibrary.wiley.com",
-    "heinonline.org",
-}
 
-REPLACEMENTS = {}
+def parse_domains() -> set[str]:
+    """Parse the domains to replace."""
+    with open(
+        Path(__file__).parent / "proxy_config_domains.txt", encoding="utf-8"
+    ) as file:
+        result = set()
 
-for domain in DOMAINS:
-    REPLACEMENTS[domain.replace(".", "-") + ".wikipedialibrary.idm.oclc.org"] = domain
-    REPLACEMENTS[domain + ".wikipedialibrary.idm.oclc.org"] = domain
+        for line in file:
+            line = line.strip()
+
+            # Skip empty lines and comments
+            if not line or line.startswith("#"):
+                continue
+
+            # Host name lines
+            if line.startswith("H"):
+                url = line.split(" ")[1]
+
+                if "/" in url:
+                    # Get just the domain
+                    parsed_domain = urlparse(url).netloc
+
+                    if parsed_domain:
+                        result.add(parsed_domain)
+                else:
+                    result.add(url)
+
+            # Domain name lines
+            elif line.startswith("D"):
+                domain = line.split(" ")[1]
+
+                result.add(domain)
+
+                if not domain.startswith("www."):
+                    result.add("www." + domain)
+
+        return result
 
 
-def process_page(page: pywikibot.Page) -> None:
+def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
     """Process a page."""
     text = page.text
-    for proxy_string, replacement in REPLACEMENTS.items():
-        text = text.replace(proxy_string, replacement)
+    for proxy_string, replacement in replacements.items():
+        if proxy_string in text:
+            text = text.replace(proxy_string, replacement)
 
     if text != page.text:
         page.text = text
@@ -68,21 +94,30 @@ def process_page(page: pywikibot.Page) -> None:
 
 def main():
     """Main script function."""
-    pages_to_edit: set[pywikibot.Page] = set()
+    domains = parse_domains()
+    logger.info(f"Parsed {len(domains)} domains")
 
-    for proxy_string in REPLACEMENTS:
-        new_pages = set(
-            pagegenerators.SearchPageGenerator(
-                f'insource:"{proxy_string}"',
-                namespaces={
-                    0,
-                },
-            )
+    replacements = {}
+
+    for domain in domains:
+        replacements[domain.replace(".", "-") + ".wikipedialibrary.idm.oclc.org"] = (
+            domain
         )
-        pages_to_edit.update(new_pages)
+        replacements[domain + ".wikipedialibrary.idm.oclc.org"] = domain
+
+    logger.info(f"Set up {len(replacements)} text replacements")
+
+    pages_to_edit = set(
+        pagegenerators.SearchPageGenerator(
+            'insource:"wikipedialibrary.idm.oclc.org"',
+            namespaces={0},
+        )
+    )
+
+    logger.info(f"Found {len(pages_to_edit)} pages to edit")
 
     for page in pages_to_edit:
-        process_page(page)
+        process_page(page, replacements)
 
 
 if __name__ == "__main__":
