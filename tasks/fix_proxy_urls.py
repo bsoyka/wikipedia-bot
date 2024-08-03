@@ -74,7 +74,11 @@ def parse_domains() -> set[str]:
 def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
     """Process a page."""
     text = page.text
-    for proxy_string, replacement in replacements.items():
+
+    # Sort keys by length to avoid replacing substrings
+    for proxy_string, replacement in sorted(
+        list(replacements.items()), key=lambda x: len(x[0]), reverse=True
+    ):
         if proxy_string in text:
             text = text.replace(proxy_string, replacement)
 
