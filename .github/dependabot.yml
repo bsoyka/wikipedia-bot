@@ -8,3 +8,5 @@ updates:
       interval: "weekly"
     reviewers:
       - "bsoyka"
+    labels:
+      - "a: dependencies"
