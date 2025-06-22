@@ -6,7 +6,5 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "bsoyka"
     labels:
       - "a: dependencies"
