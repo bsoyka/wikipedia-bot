@@ -134,7 +134,7 @@ def main(*, create_file: bool = False) -> None:
         links_to_redirects = get_links_to_redirects(redirect_pages)
         logger.info(f"Found {len(links_to_redirects)} links to redirect pages")
 
-        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
+        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:  # noqa: PTH123
             f.write("\n".join(page.title() for page in links_to_redirects))
 
         logger.success(
@@ -144,7 +144,7 @@ def main(*, create_file: bool = False) -> None:
         return
 
     # Get links from file
-    with open("links_to_redirects.txt", "r", encoding="utf-8") as f:
+    with open("links_to_redirects.txt", "r", encoding="utf-8") as f:  # noqa: PTH123
         link_titles = f.readlines()
         links_to_redirects = [
             pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
@@ -181,7 +181,7 @@ def main(*, create_file: bool = False) -> None:
                 logger.warning(f"Skipping page {page.title()}: {error}")
 
         # Update the links file
-        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:
+        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:  # noqa: PTH123
             f.write("\n".join(page.title() for page in links_to_redirects))
 
 

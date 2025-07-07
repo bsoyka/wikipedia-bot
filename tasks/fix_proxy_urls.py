@@ -34,9 +34,8 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 def parse_domains() -> set[str]:
     """Parse the domains to replace."""
-    with open(
-        Path(__file__).parent / "proxy_config_domains.txt",
-        encoding="utf-8",
+    with (Path(__file__).parent / "proxy_config_domains.txt").open(
+        encoding="utf-8"
     ) as file:
         result = set()
 
