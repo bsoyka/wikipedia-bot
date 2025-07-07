@@ -14,12 +14,3 @@ commercial/private use, modifications, and distribution, but limits liability
 and warranty.
 
 See the full legalese in [the `LICENSE` file](LICENSE).
-
-### Third-party licenses
-
-This project relies on the following third-party libraries, which are licensed
-under the Mozilla Public License 2.0. Their source code libraries are linked
-below.
-
-- [Certifi](https://github.com/certifi/python-certifi)
-- [urllib3](https://github.com/urllib3/urllib3)
