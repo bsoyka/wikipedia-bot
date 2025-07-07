@@ -63,7 +63,7 @@ def get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot
     return backlinks
 
 
-def fix_links_in_page(page: pywikibot.Page) -> str:
+def fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
     """Fix miscapitalized links to "NFL Draft" redirects in a page."""
     non_cosmetic_changes = False
 
