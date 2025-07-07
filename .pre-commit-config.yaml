@@ -7,7 +7,7 @@ repos:
       - id: check-toml
       - id: end-of-file-fixer
       - id: forbid-submodules
-#      - id: name-tests-test
+      - id: name-tests-test
       - id: trailing-whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.2
