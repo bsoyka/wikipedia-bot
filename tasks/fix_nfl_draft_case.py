@@ -19,7 +19,7 @@ PAGES_PER_BATCH = 1_000
 class InterceptHandler(logging.Handler):
     """Intercept standard logging messages toward Loguru."""
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         """Send standard logging messages to Loguru."""
         # Ignore DEBUG level messages
         if record.levelno < logging.INFO:
@@ -122,7 +122,7 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
     return text
 
 
-def main(*, create_file: bool = False):
+def main(*, create_file: bool = False) -> None:
     """Main script function."""
     if create_file:
         redirect_pages = get_redirect_pages()
@@ -148,6 +148,8 @@ def main(*, create_file: bool = False):
             for title in link_titles
         ]
 
+    logger.info(f"Loaded {len(links_to_redirects)} pages to edit")
+
     edited_pages = 0
 
     while len(links_to_redirects) > 0:
@@ -161,19 +163,18 @@ def main(*, create_file: bool = False):
         text = fix_links_in_page(page)
         page.text = text
 
-        if text == old_text:
-            continue
-
-        try:
-            page.save(
-                summary=create_edit_summary(
-                    "Fixing miscapitalization of NFL draft links", task=3
-                ),
-                minor=True,
-            )
-            edited_pages += 1
-        except pywikibot.exceptions.OtherPageSaveError as error:
-            logger.warning(f"Skipping page {page.title()}: {error}")
+        if text != old_text:
+            logger.debug(f"Changes made to {page.title()}")
+            try:
+                page.save(
+                    summary=create_edit_summary(
+                        "Fixing miscapitalization of NFL draft links", task=3
+                    ),
+                    minor=True,
+                )
+                edited_pages += 1
+            except pywikibot.exceptions.OtherPageSaveError as error:
+                logger.warning(f"Skipping page {page.title()}: {error}")
 
         # Update the links file
         with open("links_to_redirects.txt", "w", encoding="utf-8") as f:

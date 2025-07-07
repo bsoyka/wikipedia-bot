@@ -77,7 +77,7 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
 
     # Sort keys by length to avoid replacing substrings
     for proxy_string, replacement in sorted(
-        list(replacements.items()), key=lambda x: len(x[0]), reverse=True
+        replacements.items(), key=lambda x: len(x[0]), reverse=True
     ):
         if proxy_string in text:
             text = text.replace(proxy_string, replacement)
