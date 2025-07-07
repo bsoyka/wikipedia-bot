@@ -4,14 +4,12 @@ import argparse
 
 import sentry_sdk
 
-from . import __version__
+from . import __version__, fix_nfl_draft_case, fix_proxy_urls
 
 sentry_sdk.init(
     dsn="https://e8243b175c82050eaa9ea7f2793d352b@o194227.ingest.us.sentry.io/4509610786422784",
     release="wikipedia-bot@" + __version__,
 )
-
-from . import fix_nfl_draft_case, fix_proxy_urls
 
 parser = argparse.ArgumentParser()
 
