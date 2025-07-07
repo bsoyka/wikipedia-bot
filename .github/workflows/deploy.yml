@@ -1,4 +1,4 @@
-name: Deploy to Toolforge
+name: Deploy via SSH
 
 on:
   release:
