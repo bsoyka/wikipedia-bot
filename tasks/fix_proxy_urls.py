@@ -101,7 +101,7 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
 
 
 def main() -> None:
-    """Main script function."""
+    """Run proxy URL fixer."""
     domains = parse_domains()
     logger.info(f"Parsed {len(domains)} domains")
 

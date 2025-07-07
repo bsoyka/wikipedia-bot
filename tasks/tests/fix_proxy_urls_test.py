@@ -1,9 +1,12 @@
+"""Test cases for the fix_proxy_urls task."""
+
 from unittest.mock import Mock
 
 from tasks.fix_proxy_urls import process_page
 
 
 def test_process_page() -> None:
+    """Test that process_page correctly replaces proxy URLs."""
     # Create a mock page
     mock_page = Mock()
     mock_page.text = "www-newspapers-com.wikipedialibrary.idm.oclc.org"
@@ -17,6 +20,7 @@ def test_process_page() -> None:
 
 
 def test_process_page_no_change() -> None:
+    """Test that process_page does not change text if no proxy URLs are present."""
     # Create a mock page
     mock_page = Mock()
     mock_page.text = "www.example.com"

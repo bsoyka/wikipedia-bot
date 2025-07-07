@@ -17,10 +17,10 @@ dev = [
 
 [tool.ruff.lint]
 select = [
-    "A", "ANN", "ARG", "B", "BLE", "C4", "COM", "EM", "ERA", "FBT", "FIX", "FLY", "FURB", "I", "ICN",
+    "A", "ANN", "ARG", "B", "BLE", "C4", "COM", "D", "EM", "ERA", "FBT", "FIX", "FLY", "FURB", "I", "ICN",
     "INP", "ISC", "N", "PERF", "PIE", "PLC", "PLE", "PT", "Q", "RET", "RSE", "RUF",
     "SIM", "SLF", "T20", "TID", "TRY", "W",
-#    "D", "E", "PLR", "PLW", "PTH", "S", "UP",
+#    "E", "PLR", "PLW", "PTH", "S", "UP",
 ]
 
 [tool.bumpversion]

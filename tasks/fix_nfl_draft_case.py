@@ -126,7 +126,7 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
 
 
 def main(*, create_file: bool = False) -> None:
-    """Main script function."""
+    """Run NFL draft case fixer."""
     if create_file:
         redirect_pages = get_redirect_pages()
         logger.info(f"Found {len(redirect_pages)} redirect pages")
