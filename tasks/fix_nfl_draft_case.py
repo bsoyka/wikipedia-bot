@@ -45,8 +45,9 @@ def get_redirect_pages() -> set[pywikibot.Page]:
 
     pages.update(
         pagegenerators.SearchPageGenerator(
-            "intitle:/List of .+ in the NFL Draft/", namespaces=[0]
-        )
+            "intitle:/List of .+ in the NFL Draft/",
+            namespaces=[0],
+        ),
     )
 
     return set(pages)
@@ -76,7 +77,8 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
 
         # Match link title to regex for "YEAR NFL Draft"
         if re.match(r"\d{4} NFL Draft", str(link.title)) or re.match(
-            r"List of .+ in the NFL Draft", str(link.title)
+            r"List of .+ in the NFL Draft",
+            str(link.title),
         ):
             # Check if the link title is a redirect
             target = pywikibot.Page(page.site, link.title)
@@ -106,7 +108,8 @@ def fix_links_in_page(page: pywikibot.Page) -> str:
         if template.name.matches({"Main", "See also", "Further"}):
             for param in template.params:
                 if re.match(r"\d{4} NFL Draft", str(param.value)) or re.match(
-                    r"List of .+ in the NFL Draft", str(param.value)
+                    r"List of .+ in the NFL Draft",
+                    str(param.value),
                 ):
                     # Check if the link title is a redirect
                     target = pywikibot.Page(page.site, param.value)
@@ -135,7 +138,7 @@ def main(*, create_file: bool = False) -> None:
             f.write("\n".join(page.title() for page in links_to_redirects))
 
         logger.success(
-            "Successfully created links_to_redirects.txt with links to redirect pages"
+            "Successfully created links_to_redirects.txt with links to redirect pages",
         )
 
         return
@@ -168,7 +171,8 @@ def main(*, create_file: bool = False) -> None:
             try:
                 page.save(
                     summary=create_edit_summary(
-                        "Fixing miscapitalization of NFL draft links", task=3
+                        "Fixing miscapitalization of NFL draft links",
+                        task=3,
                     ),
                     minor=True,
                 )

@@ -35,7 +35,8 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 def parse_domains() -> set[str]:
     """Parse the domains to replace."""
     with open(
-        Path(__file__).parent / "proxy_config_domains.txt", encoding="utf-8"
+        Path(__file__).parent / "proxy_config_domains.txt",
+        encoding="utf-8",
     ) as file:
         result = set()
 
@@ -77,7 +78,9 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
 
     # Sort keys by length to avoid replacing substrings
     for proxy_string, replacement in sorted(
-        replacements.items(), key=lambda x: len(x[0]), reverse=True
+        replacements.items(),
+        key=lambda x: len(x[0]),
+        reverse=True,
     ):
         if proxy_string in text:
             text = text.replace(proxy_string, replacement)
@@ -88,7 +91,8 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
         try:
             page.save(
                 summary=create_edit_summary(
-                    "Replacing [[WP:TWL|TWL]] proxy links", task=2
+                    "Replacing [[WP:TWL|TWL]] proxy links",
+                    task=2,
                 ),
                 minor=True,
             )
@@ -115,7 +119,7 @@ def main() -> None:
         pagegenerators.SearchPageGenerator(
             'insource:"wikipedialibrary.idm.oclc.org"',
             namespaces={0},
-        )
+        ),
     )
 
     logger.info(f"Found {len(pages_to_edit)} pages to edit")
