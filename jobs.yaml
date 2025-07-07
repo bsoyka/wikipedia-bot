@@ -10,6 +10,11 @@
   image: python3.11
   schedule: "@daily"
   emails: onfailure
+- name: task-3-create-file
+  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 -m tasks fix-nfl-draft-case -c
+  image: python3.11
+  schedule: "@weekly"
+  emails: onfailure
 - name: logrotate
   command: logrotate -v $TOOL_DATA_DIR/logrotate-all.conf --state $TOOL_DATA_DIR/logrotate-all.state
   image: mariadb
