@@ -40,8 +40,8 @@ def parse_domains() -> set[str]:
     ) as file:
         result = set()
 
-        for line in file:
-            line = line.strip()
+        for raw_line in file:
+            line = raw_line.strip()
 
             # Skip empty lines and comments
             if not line or line.startswith("#"):

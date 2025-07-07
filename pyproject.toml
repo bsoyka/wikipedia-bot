@@ -18,9 +18,9 @@ dev = [
 [tool.ruff.lint]
 select = [
     "A", "ANN", "ARG", "B", "BLE", "C4", "D", "E", "EM", "ERA", "FBT", "FIX", "FLY",
-    "FURB", "I", "ICN", "INP", "ISC", "N", "PERF", "PIE", "PLC", "PLE", "PLR", "PT",
-    "Q", "RET", "RSE", "RUF", "SIM", "SLF", "T20", "TID", "TRY", "W",
-#    "PLW", "PTH", "S", "UP",
+    "FURB", "I", "ICN", "INP", "ISC", "N", "PERF", "PIE", "PLC", "PLE", "PLR", "PLW",
+    "PT", "Q", "RET", "RSE", "RUF", "SIM", "SLF", "T20", "TID", "TRY", "W",
+#    "PTH", "S", "UP",
 ]
 ignore = ["D203", "D213"]
 
