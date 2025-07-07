@@ -13,6 +13,14 @@ dev = [
     "pytest>=8.4.1",
 ]
 
+[tool.ruff.lint]
+select = [
+    "A", "ARG", "B", "BLE", "EM", "ERA", "FBT", "FIX", "FLY", "FURB", "I", "ICN", "INP",
+    "ISC", "N", "PERF", "PIE", "PLC", "PLE", "PT", "Q", "RET", "RSE", "RUF", "SIM",
+    "SLF", "T20", "TID", "TRY", "W",
+#    "ANN", "C4", "COM", "D", "E", "PLR", "PLW", "PTH", "S", "UP",
+]
+
 [tool.bumpversion]
 current_version = "0.5.2"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
