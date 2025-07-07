@@ -6,12 +6,12 @@
   schedule: "@daily"
   emails: onfailure
 - name: task-3
-  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 -m tasks fix-nfl-draft-case
+  command: cd ~/wikipedia-bot && uv run python -m tasks fix-nfl-draft-case
   image: python3.11
   schedule: "@daily"
   emails: onfailure
 - name: task-3-create-file
-  command: cd ~/wikipedia-bot && ./pyvenv/bin/python3 -m tasks fix-nfl-draft-case -c
+  command: cd ~/wikipedia-bot && uv run python -m tasks fix-nfl-draft-case -c
   image: python3.11
   schedule: "@weekly"
   emails: onfailure
