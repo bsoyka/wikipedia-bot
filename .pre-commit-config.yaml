@@ -21,3 +21,12 @@ repos:
     rev: 0.7.19
     hooks:
       - id: uv-lock
+
+ci:
+    autofix_commit_msg: 'Auto fixes from pre-commit hooks'
+    autofix_prs: true
+    autoupdate_branch: ''
+    autoupdate_commit_msg: 'Auto-update pre-commit hooks'
+    autoupdate_schedule: weekly
+    skip: []
+    submodules: false
