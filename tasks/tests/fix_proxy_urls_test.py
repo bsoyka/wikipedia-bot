@@ -3,7 +3,7 @@ from unittest.mock import Mock
 from tasks.fix_proxy_urls import process_page
 
 
-def test_process_page():
+def test_process_page() -> None:
     # Create a mock page
     mock_page = Mock()
     mock_page.text = "www-newspapers-com.wikipedialibrary.idm.oclc.org"
@@ -16,7 +16,7 @@ def test_process_page():
     mock_page.save.assert_called_once()
 
 
-def test_process_page_no_change():
+def test_process_page_no_change() -> None:
     # Create a mock page
     mock_page = Mock()
     mock_page.text = "www.example.com"

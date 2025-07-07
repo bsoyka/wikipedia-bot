@@ -17,7 +17,7 @@ from ._utils import create_edit_summary
 class InterceptHandler(logging.Handler):
     """Intercept standard logging messages toward Loguru."""
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         """Send standard logging messages to Loguru."""
         # Get corresponding Loguru level if it exists.
         try:
@@ -96,7 +96,7 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
             logger.warning(f"Skipping page {page.title()}: {error}")
 
 
-def main():
+def main() -> None:
     """Main script function."""
     domains = parse_domains()
     logger.info(f"Parsed {len(domains)} domains")
