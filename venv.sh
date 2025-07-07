@@ -14,8 +14,6 @@ source pyvenv/bin/activate
 # Upgrade pip inside the venv
 pip install -U pip
 
-# Install Pipenv
-pip install pipenv
-
-# Install the dependencies
-pipenv install
+# Install dependencies using uv
+pip install uv
+uv sync
