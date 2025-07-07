@@ -26,5 +26,6 @@ jobs:
           request_pty: true
           script_stop: true
           script: |
+            become ${{ vars.TOOLFORGE_TOOL }} git -C "${{ vars.TOOLFORGE_DIRECTORY }}" reset --hard
             become ${{ vars.TOOLFORGE_TOOL }} git -C "${{ vars.TOOLFORGE_DIRECTORY }}" pull
             become ${{ vars.TOOLFORGE_TOOL }} toolforge jobs load "${{ vars.TOOLFORGE_DIRECTORY }}/jobs.yaml"
