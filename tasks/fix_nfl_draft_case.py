@@ -147,6 +147,12 @@ def main(*, create_file: bool = False) -> None:
         return
 
     # Get links from file
+    if not LINK_FILE_PATH.exists():
+        logger.error(
+            f"Link file does not exist. Run the script with --create-file to create it."
+        )
+        return
+
     link_titles = LINK_FILE_PATH.read_text(encoding="utf-8").splitlines()
     links_to_redirects = [
         pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
