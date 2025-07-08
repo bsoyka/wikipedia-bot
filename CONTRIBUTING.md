@@ -50,23 +50,34 @@ This should also automatically install an appropriate Python version if one is n
 
 Once you've set up your virtual environment with the previous command, you can use the `uv run` command to execute scripts and other commands within that environment. For further information, see [uv's documentation](https://docs.astral.sh/uv/reference/cli/#uv-run).
 
+### Poe the Poet
+
+Poe the Poet is a task runner set up to provide aliases for many commands you may need to run while working on BsoykaBot.
+
+You can also install it globally using uv:
+```shell
+uv tool install poethepoet
+```
+
+This allows you to replace `uv run poe` in the examples throughout this document with only `poe`.
+
 ### Pywikibot
 
 Pywikibot has a script to generate the necessary files to authenticate your bot. This command will guide you through creating the `user-config.py` and `user-password.py` files in the project directory:
 ```shell
-uv run pwb generate_user_files
+uv run poe login
 ```
 
 ### pre-commit
 
 pre-commit adds a few hooks to your Git configuration to run some style checks before you commit your changes. Set it up with this command:
 ```shell
-uv run pre-commit install
+uv run poe precommit
 ```
 
 If you'd like to run the checks across all files in the repo on demand (rather than just those you've edited in your commit), run this command:
 ```shell
-uv run pre-commit run --all-files
+uv run poe check
 ```
 
 ### Ruff
@@ -76,7 +87,7 @@ Much of the style-checking logic in the pre-commit hooks is provided by Ruff, a 
 To run Ruff's checks, auto-fixes, and formatting, use these commands:
 ```shell
 uv run ruff check --fix
-uv run ruff format
+uv run poe format
 ```
 
 These commands are also included in the pre-commit hooks—they'll be run before every commit if you set that up in the previous section, and they'll run automatically on every pull request.
@@ -85,7 +96,7 @@ These commands are also included in the pre-commit hooks—they'll be run before
 
 Unit testing is done with Pytest. See existing files in [`tasks/tests/`](tasks/tests) for examples on how this is done, and run the full suite of tests with this command:
 ```shell
-uv run pytest
+uv run poe test
 ```
 
 ### Sentry

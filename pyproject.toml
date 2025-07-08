@@ -11,10 +11,20 @@ dependencies = [
 [dependency-groups]
 dev = [
     "bump-my-version>=1.2.0",
+    "poethepoet>=0.36.0",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
     "ruff>=0.12.2",
 ]
+
+[tool.poe.tasks]
+bump = "bump-my-version bump"
+check = "pre-commit run --all-files"
+lock = "uv lock"
+login = "pwb generate_user_files"
+precommit = "pre-commit install"
+sync = "uv sync --all-extras --dev"
+test = "pytest"
 
 [tool.ruff.lint]
 select = [
