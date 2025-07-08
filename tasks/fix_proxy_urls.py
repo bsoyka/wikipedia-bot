@@ -17,7 +17,7 @@ from ._utils import create_edit_summary
 class InterceptHandler(logging.Handler):
     """Intercept standard logging messages toward Loguru."""
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord) -> None:
         """Send standard logging messages to Loguru."""
         # Get corresponding Loguru level if it exists.
         try:
@@ -34,13 +34,13 @@ logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 def parse_domains() -> set[str]:
     """Parse the domains to replace."""
-    with open(
-        Path(__file__).parent / "proxy_config_domains.txt", encoding="utf-8"
+    with (Path(__file__).parent / "proxy_config_domains.txt").open(
+        encoding="utf-8"
     ) as file:
         result = set()
 
-        for line in file:
-            line = line.strip()
+        for raw_line in file:
+            line = raw_line.strip()
 
             # Skip empty lines and comments
             if not line or line.startswith("#"):
@@ -77,7 +77,9 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
 
     # Sort keys by length to avoid replacing substrings
     for proxy_string, replacement in sorted(
-        list(replacements.items()), key=lambda x: len(x[0]), reverse=True
+        replacements.items(),
+        key=lambda x: len(x[0]),
+        reverse=True,
     ):
         if proxy_string in text:
             text = text.replace(proxy_string, replacement)
@@ -88,7 +90,8 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
         try:
             page.save(
                 summary=create_edit_summary(
-                    "Replacing [[WP:TWL|TWL]] proxy links", task=2
+                    "Replacing [[WP:TWL|TWL]] proxy links",
+                    task=2,
                 ),
                 minor=True,
             )
@@ -96,8 +99,8 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
             logger.warning(f"Skipping page {page.title()}: {error}")
 
 
-def main():
-    """Main script function."""
+def main() -> None:
+    """Run proxy URL fixer."""
     domains = parse_domains()
     logger.info(f"Parsed {len(domains)} domains")
 
@@ -115,7 +118,7 @@ def main():
         pagegenerators.SearchPageGenerator(
             'insource:"wikipedialibrary.idm.oclc.org"',
             namespaces={0},
-        )
+        ),
     )
 
     logger.info(f"Found {len(pages_to_edit)} pages to edit")

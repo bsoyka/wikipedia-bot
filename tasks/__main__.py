@@ -16,14 +16,19 @@ parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
 fix_proxy_urls_parser = subparsers.add_parser(
-    "fix-proxy-urls", help="2: Replace proxy URLs with direct URLs"
+    "fix-proxy-urls",
+    help="2: Replace proxy URLs with direct URLs",
 )
 
 fix_nfl_draft_case_parser = subparsers.add_parser(
-    "fix-nfl-draft-case", help="3: Fix capitalization in NFL Draft links"
+    "fix-nfl-draft-case",
+    help="3: Fix capitalization in NFL Draft links",
 )
 fix_nfl_draft_case_parser.add_argument(
-    "-c", "--create-file", action="store_true", help="Create a file of links to fix"
+    "-c",
+    "--create-file",
+    action="store_true",
+    help="Create a file of links to fix",
 )
 
 args = parser.parse_args()
