@@ -80,6 +80,14 @@ If you'd like to run the checks across all files in the repo on demand (rather t
 uv run poe check
 ```
 
+### Commitizen
+
+This project uses Commitizen to standardize commit messages. Stage your changes and commit using these commands:
+```shell
+git add .
+poe commit
+```
+
 ### Ruff
 
 Much of the style-checking logic in the pre-commit hooks is provided by Ruff, a Python linter and code formatter.

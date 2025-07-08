@@ -11,6 +11,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "bump-my-version>=1.2.0",
+    "commitizen>=4.8.3",
     "poethepoet>=0.36.0",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
@@ -21,6 +22,7 @@ dev = [
 [tool.poe.tasks]
 bump = "bump-my-version bump"
 check = "pre-commit run --all-files"
+commit = "cz commit"
 coverage = "pytest --cov=tasks --cov-branch --cov-report=xml"
 lock = "uv lock"
 login = "pwb generate_user_files"
