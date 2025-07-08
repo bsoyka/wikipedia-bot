@@ -53,9 +53,32 @@ Once you've set up your virtual environment with the previous command, you can u
 ### Pywikibot
 
 Pywikibot has a script to generate the necessary files to authenticate your bot. This command will guide you through creating the `user-config.py` and `user-password.py` files in the project directory:
-
 ```shell
 uv run pwb generate_user_files
 ```
+
+### pre-commit
+
+pre-commit adds a few hooks to your Git configuration to run some style checks before you commit your changes. Set it up with this command:
+```shell
+uv run pre-commit install
+```
+
+If you'd like to run the checks across all files in the repo on demand (rather than just those you've edited in your commit), run this command:
+```shell
+uv run pre-commit run --all-files
+```
+
+### Ruff
+
+Much of the style-checking logic in the pre-commit hooks is provided by Ruff, a Python linter and code formatter.
+
+To run Ruff's checks, auto-fixes, and formatting, use these commands:
+```shell
+uv run ruff check --fix
+uv run ruff format
+```
+
+These commands are also included in the pre-commit hooks—they'll be run before every commit if you set that up in the previous section, and they'll run automatically on every pull request.
 
 ## Code review and deployment
