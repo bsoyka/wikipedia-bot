@@ -21,7 +21,7 @@ dev = [
 [tool.poe.tasks]
 bump = "bump-my-version bump"
 check = "pre-commit run --all-files"
-coverage = "pytest --cov --cov-branch --cov-report=xml"
+coverage = "pytest --cov=tasks --cov-branch --cov-report=xml"
 lock = "uv lock"
 login = "pwb generate_user_files"
 precommit = "pre-commit install"
