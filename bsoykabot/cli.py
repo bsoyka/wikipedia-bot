@@ -5,7 +5,7 @@ import argparse
 import sentry_sdk
 
 from bsoykabot import __version__
-from bsoykabot.tasks import fix_nfl_draft_case, fix_proxy_urls
+from bsoykabot.tasks import draft_case, proxy_urls
 
 
 def main() -> None:
