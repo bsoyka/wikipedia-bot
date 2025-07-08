@@ -22,6 +22,40 @@ Generally, BsoykaBot's tasks are relatively simple scripts run as cron jobs. The
 
 Per Wikipedia's policies, new bot tasks must generally be approved by the community through the [Bot Request for Approval (BRFA)](https://en.wikipedia.org/wiki/Wikipedia:Bots/Requests_for_approval) process.
 
+However, a much easier way to contribute is to help improve BsoykaBot's existing tasks! Check out the list of open issues in this repository to see if there's anything you're interested in working on. If you find an issue you'd like to tackle:
+
+1. **Comment on the issue** to let us the world you're working on it. This helps avoid duplicate efforts.
+2. **Fork the repository** and create a new branch for your changes.
+3. **Set up your development environment** (see below).
+4. **Make your changes**, including applicable unit test updates. (If you're not sure how to write tests, don't worry! We can walk through it together.)
+5. **Submit a pull request** with a clear description of what you've done and why. (Link to the issue you were working on, if applicable.)
+6. **Wait for code review**, and we'll go from there!
+
 ## Setting up a development environment
+
+Working on BsoykaBot requires a few tools behind the scenes. Here's a quick overview of each one, how to set it up, and how to use it:
+
+### uv
+
+uv is a Python package and project manager. We use it to handle Python versions, project dependencies, and virtual environments. You'll want to install uv before anything else listed here!
+
+There are many ways to install uv—check out [their installation instructions](https://docs.astral.sh/uv/getting-started/installation/) to see what's easiest for your system.
+
+Once you have uv installed, run the following command in the project directory to set up a virtual environment and install all necessary dependencies:
+```shell
+uv sync
+```
+
+This should also automatically install an appropriate Python version if one is not already installed.
+
+Once you've set up your virtual environment with the previous command, you can use the `uv run` command to execute scripts and other commands within that environment. For further information, see [uv's documentation](https://docs.astral.sh/uv/reference/cli/#uv-run).
+
+### Pywikibot
+
+Pywikibot has a script to generate the necessary files to authenticate your bot. This command will guide you through creating the `user-config.py` and `user-password.py` files in the project directory:
+
+```shell
+uv run pwb generate_user_files
+```
 
 ## Code review and deployment
