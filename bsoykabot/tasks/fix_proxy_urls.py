@@ -10,10 +10,10 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-from bsoykabot._utils import create_edit_summary
+from bsoykabot.tasks import Task
 
 
-def parse_domains() -> set[str]:
+def _parse_domains() -> set[str]:
     """Parse the domains to replace."""
     with (Path(__file__).parent / "proxy_config_domains.txt").open(
         encoding="utf-8"
@@ -52,7 +52,9 @@ def parse_domains() -> set[str]:
         return result
 
 
-def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
+def _process_page(
+    page: pywikibot.Page, replacements: dict[str, str], task: Task
+) -> None:
     """Process a page."""
     text = page.text
 
@@ -70,43 +72,42 @@ def process_page(page: pywikibot.Page, replacements: dict[str, str]) -> None:
 
         try:
             page.save(
-                summary=create_edit_summary(
-                    "Replacing [[WP:TWL|TWL]] proxy links",
-                    task=2,
-                ),
+                summary=task.make_edit_summary("Replacing [[WP:TWL|TWL]] proxy links"),
                 minor=True,
             )
         except pywikibot.exceptions.OtherPageSaveError as error:
             logger.warning(f"Skipping page {page.title()}: {error}")
 
 
-def main() -> None:
-    """Run proxy URL fixer."""
-    domains = parse_domains()
-    logger.info(f"Parsed {len(domains)} domains")
+class ProxyUrlsTask(Task):
+    """Task to replace Wikipedia Library proxy URLs in articles."""
 
-    replacements = {}
+    name = "proxy_urls"
+    number = 2
 
-    for domain in domains:
-        replacements[domain.replace(".", "-") + ".wikipedialibrary.idm.oclc.org"] = (
-            domain
+    def run(self) -> None:
+        """Run the task."""
+        domains = _parse_domains()
+        logger.info(f"Parsed {len(domains)} domains")
+
+        replacements = {}
+
+        for domain in domains:
+            replacements[
+                domain.replace(".", "-") + ".wikipedialibrary.idm.oclc.org"
+            ] = domain
+            replacements[domain + ".wikipedialibrary.idm.oclc.org"] = domain
+
+        logger.info(f"Set up {len(replacements)} text replacements")
+
+        pages_to_edit = set(
+            pagegenerators.SearchPageGenerator(
+                'insource:"wikipedialibrary.idm.oclc.org"',
+                namespaces={0},
+            ),
         )
-        replacements[domain + ".wikipedialibrary.idm.oclc.org"] = domain
 
-    logger.info(f"Set up {len(replacements)} text replacements")
+        logger.info(f"Found {len(pages_to_edit)} pages to edit")
 
-    pages_to_edit = set(
-        pagegenerators.SearchPageGenerator(
-            'insource:"wikipedialibrary.idm.oclc.org"',
-            namespaces={0},
-        ),
-    )
-
-    logger.info(f"Found {len(pages_to_edit)} pages to edit")
-
-    for page in pages_to_edit:
-        process_page(page, replacements)
-
-
-if __name__ == "__main__":
-    main()
+        for page in pages_to_edit:
+            _process_page(page, replacements, task=self)

@@ -2,7 +2,8 @@
 
 from unittest.mock import Mock
 
-from bsoykabot.tasks.fix_proxy_urls import process_page
+from bsoykabot.tasks import Task
+from bsoykabot.tasks.fix_proxy_urls import _process_page
 
 TEST_REPLACEMENTS = {
     "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com"
@@ -11,12 +12,15 @@ TEST_REPLACEMENTS = {
 
 def test_process_page() -> None:
     """Test that process_page correctly replaces proxy URLs."""
+    # Create a mock Task object
+    mock_task = Mock(spec=Task)
+
     # Create a mock page
     mock_page = Mock()
     mock_page.text = "www-newspapers-com.wikipedialibrary.idm.oclc.org"
 
     # Call the function with the mock page
-    process_page(mock_page, TEST_REPLACEMENTS)
+    _process_page(mock_page, TEST_REPLACEMENTS, task=mock_task)
 
     # Check that the page's text was updated and saved
     assert mock_page.text == "www.newspapers.com"
@@ -25,12 +29,15 @@ def test_process_page() -> None:
 
 def test_process_page_no_change() -> None:
     """Test that process_page does not change text if no proxy URLs are present."""
+    # Create a mock Task object
+    mock_task = Mock(spec=Task)
+
     # Create a mock page
     mock_page = Mock()
     mock_page.text = "www.example.com"
 
     # Call the function with the mock page
-    process_page(mock_page, TEST_REPLACEMENTS)
+    _process_page(mock_page, TEST_REPLACEMENTS, task=mock_task)
 
     # Check that the page's text was not updated and the page was not saved
     assert mock_page.text == "www.example.com"
