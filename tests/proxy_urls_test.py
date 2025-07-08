@@ -3,15 +3,38 @@
 from unittest.mock import Mock
 
 from bsoykabot.tasks import Task
-from bsoykabot.tasks.proxy_urls import _process_page
+from bsoykabot.tasks.proxy_urls import _parse_domains, _process_page
 
 TEST_REPLACEMENTS = {
     "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com"
 }
 
 
+def test_parse_domains() -> None:
+    """Test that _parse_domains correctly extracts domains from the config."""
+    # Create a mock proxy config
+    mock_proxy_config = [
+        "H https://host-without-www.com",
+        "H https://www.host-with-www.com",
+        "H host-no-slash.com",
+        "D domain-without-www.com",
+        "D www.domain-with-www.com",
+        "# Comment",
+        "",
+    ]
+
+    assert _parse_domains(proxy_config=mock_proxy_config) == {
+        "host-without-www.com",
+        "www.host-with-www.com",
+        "host-no-slash.com",
+        "domain-without-www.com",
+        "www.domain-without-www.com",
+        "www.domain-with-www.com",
+    }
+
+
 def test_process_page() -> None:
-    """Test that process_page correctly replaces proxy URLs."""
+    """Test that _process_page correctly replaces proxy URLs."""
     # Create a mock Task object
     mock_task = Mock(spec=Task)
 
@@ -28,7 +51,7 @@ def test_process_page() -> None:
 
 
 def test_process_page_no_change() -> None:
-    """Test that process_page does not change text if no proxy URLs are present."""
+    """Test that _process_page does not change text if no proxy URLs are present."""
     # Create a mock Task object
     mock_task = Mock(spec=Task)
 

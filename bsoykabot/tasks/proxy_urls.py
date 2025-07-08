@@ -12,44 +12,46 @@ from pywikibot import pagegenerators
 
 from bsoykabot.tasks import Task
 
+PROXY_CONFIG_PATH = Path(__file__).parent / "proxy_config_domains.txt"
 
-def _parse_domains() -> set[str]:
+
+def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
     """Parse the domains to replace."""
-    with (Path(__file__).parent / "proxy_config_domains.txt").open(
-        encoding="utf-8"
-    ) as file:
-        result = set()
+    if proxy_config is None:
+        proxy_config = PROXY_CONFIG_PATH.read_text().splitlines()
 
-        for raw_line in file:
-            line = raw_line.strip()
+    result = set()
 
-            # Skip empty lines and comments
-            if not line or line.startswith("#"):
-                continue
+    for raw_line in proxy_config:
+        line = raw_line.strip()
 
-            # Host name lines
-            if line.startswith("H"):
-                url = line.split(" ")[1]
+        # Skip empty lines and comments
+        if not line or line.startswith("#"):
+            continue
 
-                if "/" in url:
-                    # Get just the domain
-                    parsed_domain = urlparse(url).netloc
+        # Host name lines
+        if line.startswith("H"):
+            url = line.split(" ")[1]
 
-                    if parsed_domain:
-                        result.add(parsed_domain)
-                else:
-                    result.add(url)
+            if "/" in url:
+                # Get just the domain
+                parsed_domain = urlparse(url).netloc
 
-            # Domain name lines
-            elif line.startswith("D"):
-                domain = line.split(" ")[1]
+                if parsed_domain:
+                    result.add(parsed_domain)
+            else:
+                result.add(url)
 
-                result.add(domain)
+        # Domain name lines
+        elif line.startswith("D"):
+            domain = line.split(" ")[1]
 
-                if not domain.startswith("www."):
-                    result.add("www." + domain)
+            result.add(domain)
 
-        return result
+            if not domain.startswith("www."):
+                result.add("www." + domain)
+
+    return result
 
 
 def _process_page(
