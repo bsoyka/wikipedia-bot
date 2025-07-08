@@ -11,19 +11,17 @@ dependencies = [
 [dependency-groups]
 dev = [
     "bump-my-version>=1.2.0",
-    "coverage>=7.9.2",
     "poethepoet>=0.36.0",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
     "ruff>=0.12.2",
 ]
 
 [tool.poe.tasks]
 bump = "bump-my-version bump"
 check = "pre-commit run --all-files"
-_coverage_run = "coverage run --source=tasks -m pytest tasks"
-_coverage_report = "coverage report"
-coverage = ["_coverage_run", "_coverage_report"]
+coverage = "pytest --cov --cov-branch --cov-report=xml"
 lock = "uv lock"
 login = "pwb generate_user_files"
 precommit = "pre-commit install"
