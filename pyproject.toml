@@ -64,3 +64,9 @@ post_commit_hooks = []
 
 [[tool.bumpversion.files]]
 filename = "tasks/__init__.py"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version_provider = "uv"
