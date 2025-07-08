@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from tasks.fix_nfl_draft_case import LINK_FILE_PATH, PAGES_PER_BATCH
+from bsoykabot.tasks.fix_nfl_draft_case import LINK_FILE_PATH, PAGES_PER_BATCH
 
 
 def test_task_constants() -> None:

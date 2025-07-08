@@ -2,7 +2,7 @@
 
 from unittest.mock import Mock
 
-from tasks.fix_proxy_urls import process_page
+from bsoykabot.tasks.fix_proxy_urls import process_page
 
 TEST_REPLACEMENTS = {
     "www-newspapers-com.wikipedialibrary.idm.oclc.org": "www.newspapers.com"

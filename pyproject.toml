@@ -1,5 +1,5 @@
 [project]
-name = "wikipedia-bot"
+name = "bsoykabot"
 version = "0.5.3"
 requires-python = ">=3.13"
 dependencies = [
@@ -12,12 +12,20 @@ dependencies = [
 dev = [
     "bump-my-version>=1.2.0",
     "commitizen>=4.8.3",
+    "hatchling>=1.27.0",
     "poethepoet>=0.36.0",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
     "ruff>=0.12.2",
 ]
+
+[project.scripts]
+bsoykabot = "bsoykabot.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.poe.tasks]
 bump = "bump-my-version bump"
@@ -27,6 +35,7 @@ coverage = "pytest --cov=tasks --cov-branch --cov-report=xml"
 lock = "uv lock"
 login = "pwb generate_user_files"
 precommit = "pre-commit install"
+run = "bsoykabot"
 sync = "uv sync --all-extras --dev"
 test = "pytest"
 

@@ -12,7 +12,7 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-from ._utils import create_edit_summary
+from bsoykabot._utils import create_edit_summary
 
 LINK_FILE_PATH = Path(__file__).parent / "links_to_redirects.txt"
 PAGES_PER_BATCH = 1_000

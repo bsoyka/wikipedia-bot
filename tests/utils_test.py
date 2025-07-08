@@ -1,7 +1,7 @@
 """Test cases for shared task utilities."""
 
-from tasks import __version__
-from tasks._utils import create_edit_summary
+from bsoykabot import __version__
+from bsoykabot._utils import create_edit_summary
 
 
 def test_create_edit_summary() -> None:

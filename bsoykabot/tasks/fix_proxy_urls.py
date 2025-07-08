@@ -11,7 +11,7 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-from ._utils import create_edit_summary
+from bsoykabot._utils import create_edit_summary
 
 
 class InterceptHandler(logging.Handler):

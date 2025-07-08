@@ -1,6 +1,6 @@
 """Internal utilities shared between tasks."""
 
-from . import __version__
+from bsoykabot import __version__
 
 
 def create_edit_summary(edits: str, *, task: int) -> str:
