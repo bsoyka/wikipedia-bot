@@ -41,7 +41,7 @@ uv is a Python package and project manager. We use it to handle Python versions,
 
 There are many ways to install uv—check out [their installation instructions](https://docs.astral.sh/uv/getting-started/installation/) to see what's easiest for your system.
 
-Once you have uv installed, run the following command in the project directory to set up a virtual environment and install all necessary dependencies:
+Once you have uv installed, run the following command in the project directory to set up a virtual environment and install all necessary dependencies, including developer tools:
 ```shell
 uv sync
 ```
