@@ -17,6 +17,7 @@ def test_parse_domains() -> None:
         "H https://host-without-www.com",
         "H https://www.host-with-www.com",
         "H host-no-slash.com",
+        "H invalid/url",
         "D domain-without-www.com",
         "D www.domain-with-www.com",
         "# Comment",
