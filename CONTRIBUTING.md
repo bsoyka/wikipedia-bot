@@ -87,7 +87,7 @@ Much of the style-checking logic in the pre-commit hooks is provided by Ruff, a 
 To run Ruff's checks, auto-fixes, and formatting, use these commands:
 ```shell
 uv run ruff check --fix
-uv run poe format
+uv run ruff format
 ```
 
 These commands are also included in the pre-commit hooks—they'll be run before every commit if you set that up in the previous section, and they'll run automatically on every pull request.
