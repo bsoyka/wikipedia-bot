@@ -3,7 +3,6 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_2 for more info.
 """
 
-import logging
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -12,24 +11,6 @@ from loguru import logger
 from pywikibot import pagegenerators
 
 from bsoykabot._utils import create_edit_summary
-
-
-class InterceptHandler(logging.Handler):
-    """Intercept standard logging messages toward Loguru."""
-
-    def emit(self, record: logging.LogRecord) -> None:
-        """Send standard logging messages to Loguru."""
-        # Get corresponding Loguru level if it exists.
-        try:
-            level = logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
-
-        # Forward the message
-        logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
-
-
-logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 
 def parse_domains() -> set[str]:

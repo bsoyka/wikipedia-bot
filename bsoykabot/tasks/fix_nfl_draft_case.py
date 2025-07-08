@@ -3,7 +3,6 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_3 for more info.
 """
 
-import logging
 import re
 from pathlib import Path
 
@@ -16,28 +15,6 @@ from bsoykabot._utils import create_edit_summary
 
 LINK_FILE_PATH = Path(__file__).parent / "links_to_redirects.txt"
 PAGES_PER_BATCH = 1_000
-
-
-class InterceptHandler(logging.Handler):
-    """Intercept standard logging messages toward Loguru."""
-
-    def emit(self, record: logging.LogRecord) -> None:
-        """Send standard logging messages to Loguru."""
-        # Ignore DEBUG level messages
-        if record.levelno < logging.INFO:
-            return
-
-        # Get corresponding Loguru level if it exists.
-        try:
-            level = logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
-
-        # Forward the message
-        logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
-
-
-logging.basicConfig(handlers=[InterceptHandler()], level=0)
 
 
 def get_redirect_pages() -> set[pywikibot.Page]:
