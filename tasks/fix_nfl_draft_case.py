@@ -147,7 +147,9 @@ def main(*, create_file: bool = False) -> None:
         return
 
     # Get links from file
-    link_titles = Path("links_to_redirects.txt").read_text(encoding="utf-8").splitlines()
+    link_titles = (
+        Path("links_to_redirects.txt").read_text(encoding="utf-8").splitlines()
+    )
     links_to_redirects = [
         pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
         for title in link_titles
