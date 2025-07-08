@@ -1,5 +1,8 @@
 name: Deploy via SSH
 
+permissions:
+  contents: read
+
 on:
   release:
     types: [published]
