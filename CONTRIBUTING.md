@@ -102,4 +102,4 @@ Once you make a pull request, you'll get automated feedback from a few services:
 
 As soon as possible, you'll see a human review from me, @bsoyka. If there are any other changes I'd like to see, I'll help you through them.
 
-Once your pull request is fully approved, both by me and my army of robots, it'll be merged into the `main` branch. A new tag/release will be created shortly after, triggering the new code to deploy to the bot's server.
+Once your pull request is fully approved, both by me and my army of robots, it'll be merged into the `main` branch. I'll update the bot's version number following the merge (using [Bump My Version](https://callowayproject.github.io/bump-my-version/)). A new tag/release will be created shortly after, triggering the new code to deploy to the bot's server.
