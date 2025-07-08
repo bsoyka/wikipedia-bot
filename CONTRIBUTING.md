@@ -86,3 +86,13 @@ These commands are also included in the pre-commit hooks—they'll be run before
 In production, errors are automatically tracked and logged using Sentry. There's no further setup needed in your environment, but it's a tool worth noting so you understand its presence.
 
 ## Code review and deployment
+
+Once you make a pull request, you'll get automated feedback from a few services:
+
+* **GitHub Copilot** will leave comments on your changes, which may include suggestions for further improvements. These are AI-generated and not always accurate, so take them with a grain of salt; however, they may offer helpful improvements.
+* **pre-commit.ci** will run the same style checks mentioned previously (including Ruff), possibly including some automated fixes if needed.
+* **CodeQL** will analyze your changes for any security issues, flagging them if needed.
+
+As soon as possible, you'll see a human review from me, @bsoyka. If there are any other changes I'd like to see, I'll help you through them.
+
+Once your pull request is fully approved, both by me and my army of robots, it'll be merged into the `main` branch. A new tag/release will be created shortly after, triggering the new code to deploy to the bot's server.
