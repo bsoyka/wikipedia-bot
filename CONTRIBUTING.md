@@ -81,4 +81,8 @@ uv run ruff format
 
 These commands are also included in the pre-commit hooks—they'll be run before every commit if you set that up in the previous section, and they'll run automatically on every pull request.
 
+### Sentry
+
+In production, errors are automatically tracked and logged using Sentry. There's no further setup needed in your environment, but it's a tool worth noting so you understand its presence.
+
 ## Code review and deployment
