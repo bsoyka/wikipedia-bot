@@ -5,6 +5,7 @@ See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_3 for more info.
 
 import logging
 import re
+from pathlib import Path
 
 import mwparserfromhell
 import pywikibot
@@ -134,8 +135,10 @@ def main(*, create_file: bool = False) -> None:
         links_to_redirects = get_links_to_redirects(redirect_pages)
         logger.info(f"Found {len(links_to_redirects)} links to redirect pages")
 
-        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:  # noqa: PTH123
-            f.write("\n".join(page.title() for page in links_to_redirects))
+        Path("links_to_redirects.txt").write_text(
+            "\n".join(page.title() for page in links_to_redirects),
+            encoding="utf-8",
+        )
 
         logger.success(
             "Successfully created links_to_redirects.txt with links to redirect pages",
@@ -144,12 +147,11 @@ def main(*, create_file: bool = False) -> None:
         return
 
     # Get links from file
-    with open("links_to_redirects.txt", encoding="utf-8") as f:  # noqa: PTH123
-        link_titles = f.readlines()
-        links_to_redirects = [
-            pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
-            for title in link_titles
-        ]
+    link_titles = Path("links_to_redirects.txt").read_text(encoding="utf-8").splitlines()
+    links_to_redirects = [
+        pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
+        for title in link_titles
+    ]
 
     logger.info(f"Loaded {len(links_to_redirects)} pages to edit")
 
@@ -181,8 +183,10 @@ def main(*, create_file: bool = False) -> None:
                 logger.warning(f"Skipping page {page.title()}: {error}")
 
         # Update the links file
-        with open("links_to_redirects.txt", "w", encoding="utf-8") as f:  # noqa: PTH123
-            f.write("\n".join(page.title() for page in links_to_redirects))
+        Path("links_to_redirects.txt").write_text(
+            "\n".join(page.title() for page in links_to_redirects),
+            encoding="utf-8",
+        )
 
 
 if __name__ == "__main__":
