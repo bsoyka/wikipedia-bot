@@ -14,6 +14,7 @@ from pywikibot import pagegenerators
 
 from ._utils import create_edit_summary
 
+LINK_FILE_PATH = Path(__file__).parent / "links_to_redirects.txt"
 PAGES_PER_BATCH = 1_000
 
 
@@ -135,9 +136,8 @@ def main(*, create_file: bool = False) -> None:
         links_to_redirects = get_links_to_redirects(redirect_pages)
         logger.info(f"Found {len(links_to_redirects)} links to redirect pages")
 
-        Path("links_to_redirects.txt").write_text(
-            "\n".join(page.title() for page in links_to_redirects),
-            encoding="utf-8",
+        LINK_FILE_PATH.write_text(
+            "\n".join(page.title() for page in links_to_redirects), encoding="utf-8"
         )
 
         logger.success(
@@ -147,9 +147,7 @@ def main(*, create_file: bool = False) -> None:
         return
 
     # Get links from file
-    link_titles = (
-        Path("links_to_redirects.txt").read_text(encoding="utf-8").splitlines()
-    )
+    link_titles = LINK_FILE_PATH.read_text(encoding="utf-8").splitlines()
     links_to_redirects = [
         pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
         for title in link_titles
@@ -185,9 +183,8 @@ def main(*, create_file: bool = False) -> None:
                 logger.warning(f"Skipping page {page.title()}: {error}")
 
         # Update the links file
-        Path("links_to_redirects.txt").write_text(
-            "\n".join(page.title() for page in links_to_redirects),
-            encoding="utf-8",
+        LINK_FILE_PATH.write_text(
+            "\n".join(page.title() for page in links_to_redirects), encoding="utf-8"
         )
 
 
