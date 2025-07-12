@@ -19,7 +19,7 @@ def main() -> None:
 
     subparsers = parser.add_subparsers(title="subcommands", dest="subcommand")
 
-    fix_proxy_urls_parser = subparsers.add_parser(
+    subparsers.add_parser(
         "fix-proxy-urls",
         help="2: Replace proxy URLs with direct URLs",
     )
@@ -38,8 +38,11 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.subcommand == "fix-nfl-draft-case":
-        fix_nfl_draft_case.main(create_file=args.create_file)
+        if args.create_file:
+            draft_case.DraftCaseFileTask().run()
+        else:
+            draft_case.DraftCaseTask().run()
     elif args.subcommand == "fix-proxy-urls":
-        fix_proxy_urls.main()
+        proxy_urls.ProxyUrlsTask().run()
     else:
         parser.print_help()
