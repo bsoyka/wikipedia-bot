@@ -3,7 +3,6 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_3 for more info.
 """
 
-import logging
 import re
 from pathlib import Path
 
@@ -12,35 +11,13 @@ import pywikibot
 from loguru import logger
 from pywikibot import pagegenerators
 
-from ._utils import create_edit_summary
+from bsoykabot.tasks import Task
 
 LINK_FILE_PATH = Path(__file__).parent / "links_to_redirects.txt"
 PAGES_PER_BATCH = 1_000
 
 
-class InterceptHandler(logging.Handler):
-    """Intercept standard logging messages toward Loguru."""
-
-    def emit(self, record: logging.LogRecord) -> None:
-        """Send standard logging messages to Loguru."""
-        # Ignore DEBUG level messages
-        if record.levelno < logging.INFO:
-            return
-
-        # Get corresponding Loguru level if it exists.
-        try:
-            level = logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
-
-        # Forward the message
-        logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
-
-
-logging.basicConfig(handlers=[InterceptHandler()], level=0)
-
-
-def get_redirect_pages() -> set[pywikibot.Page]:
+def _get_redirect_pages() -> set[pywikibot.Page]:
     """Make a set of all capitalized NFL Draft pages to change."""
     titles = {f"{year} NFL Draft" for year in range(1936, 2025)}
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
@@ -55,7 +32,7 @@ def get_redirect_pages() -> set[pywikibot.Page]:
     return set(pages)
 
 
-def get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot.Page]:
+def _get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot.Page]:
     """Get all pages that link to the redirect pages."""
     backlinks = set()
 
@@ -65,7 +42,7 @@ def get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot
     return backlinks
 
 
-def fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
+def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
     """Fix miscapitalized links to "NFL Draft" redirects in a page."""
     non_cosmetic_changes = False
 
@@ -127,13 +104,74 @@ def fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
     return text
 
 
-def main(*, create_file: bool = False) -> None:
-    """Run NFL draft case fixer."""
-    if create_file:
-        redirect_pages = get_redirect_pages()
+class DraftCaseTask(Task):
+    """Task to correct capitalization of "NFL draft" in articles."""
+
+    name = "draft_case"
+    number = 2
+
+    def run(self) -> None:
+        """Run the task."""
+        # Get links from file
+        if not LINK_FILE_PATH.exists():
+            logger.error(
+                "Link file does not exist. "
+                "Run the script with --create-file to create it."
+            )
+            return
+
+        link_titles = LINK_FILE_PATH.read_text(encoding="utf-8").splitlines()
+        links_to_redirects = [
+            pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
+            for title in link_titles
+        ]
+
+        logger.info(f"Loaded {len(links_to_redirects)} pages to edit")
+
+        edited_pages = 0
+
+        while len(links_to_redirects) > 0:
+            page = links_to_redirects.pop(0)
+
+            if edited_pages >= PAGES_PER_BATCH:
+                break
+
+            old_text = page.text
+
+            text = _fix_links_in_page(page)
+            page.text = text
+
+            if text != old_text:
+                logger.debug(f"Changes made to {page.title()}")
+                try:
+                    page.save(
+                        summary=self.make_edit_summary(
+                            "Fixing miscapitalization of NFL draft links"
+                        ),
+                        minor=True,
+                    )
+                    edited_pages += 1
+                except pywikibot.exceptions.OtherPageSaveError as error:
+                    logger.warning(f"Skipping page {page.title()}: {error}")
+
+            # Update the links file
+            LINK_FILE_PATH.write_text(
+                "\n".join(page.title() for page in links_to_redirects), encoding="utf-8"
+            )
+
+
+class DraftCaseFileTask(Task):
+    """Task to create the file for the DraftCaseTask to work on."""
+
+    name = "draft_case"
+    number = 2
+
+    def run(self) -> None:
+        """Run the task."""
+        redirect_pages = _get_redirect_pages()
         logger.info(f"Found {len(redirect_pages)} redirect pages")
 
-        links_to_redirects = get_links_to_redirects(redirect_pages)
+        links_to_redirects = _get_links_to_redirects(redirect_pages)
         logger.info(f"Found {len(links_to_redirects)} links to redirect pages")
 
         LINK_FILE_PATH.write_text(
@@ -143,56 +181,3 @@ def main(*, create_file: bool = False) -> None:
         logger.success(
             "Successfully created links_to_redirects.txt with links to redirect pages",
         )
-
-        return
-
-    # Get links from file
-    if not LINK_FILE_PATH.exists():
-        logger.error(
-            f"Link file does not exist. Run the script with --create-file to create it."
-        )
-        return
-
-    link_titles = LINK_FILE_PATH.read_text(encoding="utf-8").splitlines()
-    links_to_redirects = [
-        pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
-        for title in link_titles
-    ]
-
-    logger.info(f"Loaded {len(links_to_redirects)} pages to edit")
-
-    edited_pages = 0
-
-    while len(links_to_redirects) > 0:
-        page = links_to_redirects.pop(0)
-
-        if edited_pages >= PAGES_PER_BATCH:
-            break
-
-        old_text = page.text
-
-        text = fix_links_in_page(page)
-        page.text = text
-
-        if text != old_text:
-            logger.debug(f"Changes made to {page.title()}")
-            try:
-                page.save(
-                    summary=create_edit_summary(
-                        "Fixing miscapitalization of NFL draft links",
-                        task=3,
-                    ),
-                    minor=True,
-                )
-                edited_pages += 1
-            except pywikibot.exceptions.OtherPageSaveError as error:
-                logger.warning(f"Skipping page {page.title()}: {error}")
-
-        # Update the links file
-        LINK_FILE_PATH.write_text(
-            "\n".join(page.title() for page in links_to_redirects), encoding="utf-8"
-        )
-
-
-if __name__ == "__main__":
-    main()
