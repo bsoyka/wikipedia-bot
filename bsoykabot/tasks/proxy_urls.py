@@ -12,7 +12,7 @@ from pywikibot import pagegenerators
 
 from bsoykabot.tasks import Task
 
-PROXY_CONFIG_PATH = Path(__file__).parent / "proxy_config_domains.txt"
+PROXY_CONFIG_PATH = Path(__file__).parent / 'proxy_config_domains.txt'
 
 
 def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
@@ -26,14 +26,14 @@ def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
         line = raw_line.strip()
 
         # Skip empty lines and comments
-        if not line or line.startswith("#"):
+        if not line or line.startswith('#'):
             continue
 
         # Host name lines
-        if line.startswith("H"):
-            url = line.split(" ")[1]
+        if line.startswith('H'):
+            url = line.split(' ')[1]
 
-            if "/" in url:
+            if '/' in url:
                 # Get just the domain
                 parsed_domain = urlparse(url).netloc
 
@@ -43,13 +43,13 @@ def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
                 result.add(url)
 
         # Domain name lines
-        elif line.startswith("D"):
-            domain = line.split(" ")[1]
+        elif line.startswith('D'):
+            domain = line.split(' ')[1]
 
             result.add(domain)
 
-            if not domain.startswith("www."):
-                result.add("www." + domain)
+            if not domain.startswith('www.'):
+                result.add('www.' + domain)
 
     return result
 
@@ -74,33 +74,33 @@ def _process_page(
 
         try:
             page.save(
-                summary=task.make_edit_summary("Replacing [[WP:TWL|TWL]] proxy links"),
+                summary=task.make_edit_summary('Replacing [[WP:TWL|TWL]] proxy links'),
                 minor=True,
             )
         except pywikibot.exceptions.OtherPageSaveError as error:
-            logger.warning(f"Skipping page {page.title()}: {error}")
+            logger.warning(f'Skipping page {page.title()}: {error}')
 
 
 class ProxyUrlsTask(Task):
     """Task to replace Wikipedia Library proxy URLs in articles."""
 
-    name = "proxy_urls"
+    name = 'proxy_urls'
     number = 2
 
     def run(self) -> None:
         """Run the task."""
         domains = _parse_domains()
-        logger.info(f"Parsed {len(domains)} domains")
+        logger.info(f'Parsed {len(domains)} domains')
 
         replacements = {}
 
         for domain in domains:
             replacements[
-                domain.replace(".", "-") + ".wikipedialibrary.idm.oclc.org"
+                domain.replace('.', '-') + '.wikipedialibrary.idm.oclc.org'
             ] = domain
-            replacements[domain + ".wikipedialibrary.idm.oclc.org"] = domain
+            replacements[domain + '.wikipedialibrary.idm.oclc.org'] = domain
 
-        logger.info(f"Set up {len(replacements)} text replacements")
+        logger.info(f'Set up {len(replacements)} text replacements')
 
         pages_to_edit = set(
             pagegenerators.SearchPageGenerator(
@@ -109,7 +109,7 @@ class ProxyUrlsTask(Task):
             ),
         )
 
-        logger.info(f"Found {len(pages_to_edit)} pages to edit")
+        logger.info(f'Found {len(pages_to_edit)} pages to edit')
 
         for page in pages_to_edit:
             _process_page(page, replacements, task=self)

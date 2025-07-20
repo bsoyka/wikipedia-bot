@@ -29,8 +29,8 @@ class Task:
             str: A formatted edit summary string.
         """
         return (
-            f"{edits} "
-            f"([[User:BsoykaBot/Task {self.number}|Task {self.number}]], "
-            f"v{__version__}, "
-            "[[User talk:BsoykaBot|report errors]])"
+            f'{edits} '
+            f'([[User:BsoykaBot/Task {self.number}|Task {self.number}]], '
+            f'v{__version__}, '
+            '[[User talk:BsoykaBot|report errors]])'
         )

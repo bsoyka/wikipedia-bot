@@ -13,18 +13,18 @@ from pywikibot import pagegenerators
 
 from bsoykabot.tasks import Task
 
-LINK_FILE_PATH = Path(__file__).parent / "links_to_redirects.txt"
+LINK_FILE_PATH = Path(__file__).parent / 'links_to_redirects.txt'
 PAGES_PER_BATCH = 1_000
 
 
 def _get_redirect_pages() -> set[pywikibot.Page]:
     """Make a set of all capitalized NFL Draft pages to change."""
-    titles = {f"{year} NFL Draft" for year in range(1936, 2025)}
+    titles = {f'{year} NFL Draft' for year in range(1936, 2025)}
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
 
     pages.update(
         pagegenerators.SearchPageGenerator(
-            "intitle:/List of .+ in the NFL Draft/",
+            'intitle:/List of .+ in the NFL Draft/',
             namespaces=[0],
         ),
     )
@@ -55,25 +55,25 @@ def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
         old_link_text: mwparserfromhell.Wikicode | None = link.text
 
         # Match link title to regex for "YEAR NFL Draft"
-        if re.match(r"\d{4} NFL Draft", str(link.title)) or re.match(
-            r"List of .+ in the NFL Draft",
+        if re.match(r'\d{4} NFL Draft', str(link.title)) or re.match(
+            r'List of .+ in the NFL Draft',
             str(link.title),
         ):
             # Check if the link title is a redirect
             target = pywikibot.Page(page.site, link.title)
             if target.isRedirectPage():
-                if "#" in str(link.title):
-                    section_heading = str(link.title).split("#")[1]
+                if '#' in str(link.title):
+                    section_heading = str(link.title).split('#')[1]
                     new_page_title = str(target.getRedirectTarget().title())
 
-                    link.title = f"{new_page_title}#{section_heading}"
+                    link.title = f'{new_page_title}#{section_heading}'
                 else:
                     new_page_title = str(target.getRedirectTarget().title())
                     link.title = new_page_title
 
                 # Lowercase "Draft" in the link text if needed using regex
                 if link.text:
-                    link.text = re.sub(r"\bDraft\b", "draft", str(link.text))
+                    link.text = re.sub(r'\bDraft\b', 'draft', str(link.text))
 
                 if (not link.text) or old_link_text != link.text:
                     non_cosmetic_changes = True
@@ -84,10 +84,10 @@ def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
 
     for template in templates:
         # Fix capitalization in {{Main|...}}, {{See also|...}}, etc.
-        if template.name.matches({"Main", "See also", "Further"}):
+        if template.name.matches({'Main', 'See also', 'Further'}):
             for param in template.params:
-                if re.match(r"\d{4} NFL Draft", str(param.value)) or re.match(
-                    r"List of .+ in the NFL Draft",
+                if re.match(r'\d{4} NFL Draft', str(param.value)) or re.match(
+                    r'List of .+ in the NFL Draft',
                     str(param.value),
                 ):
                     # Check if the link title is a redirect
@@ -107,26 +107,26 @@ def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
 class DraftCaseTask(Task):
     """Task to correct capitalization of "NFL draft" in articles."""
 
-    name = "draft_case"
-    number = 2
+    name = 'draft_case'
+    number = 3
 
     def run(self) -> None:
         """Run the task."""
         # Get links from file
         if not LINK_FILE_PATH.exists():
             logger.error(
-                "Link file does not exist. "
-                "Run the script with --create-file to create it."
+                'Link file does not exist. '
+                'Run the script with --create-file to create it.'
             )
             return
 
-        link_titles = LINK_FILE_PATH.read_text(encoding="utf-8").splitlines()
+        link_titles = LINK_FILE_PATH.read_text(encoding='utf-8').splitlines()
         links_to_redirects = [
-            pywikibot.Page(pywikibot.Site("en", "wikipedia"), title.strip())
+            pywikibot.Page(pywikibot.Site('en', 'wikipedia'), title.strip())
             for title in link_titles
         ]
 
-        logger.info(f"Loaded {len(links_to_redirects)} pages to edit")
+        logger.info(f'Loaded {len(links_to_redirects)} pages to edit')
 
         edited_pages = 0
 
@@ -142,42 +142,42 @@ class DraftCaseTask(Task):
             page.text = text
 
             if text != old_text:
-                logger.debug(f"Changes made to {page.title()}")
+                logger.debug(f'Changes made to {page.title()}')
                 try:
                     page.save(
                         summary=self.make_edit_summary(
-                            "Fixing miscapitalization of NFL draft links"
+                            'Fixing miscapitalization of NFL draft links'
                         ),
                         minor=True,
                     )
                     edited_pages += 1
                 except pywikibot.exceptions.OtherPageSaveError as error:
-                    logger.warning(f"Skipping page {page.title()}: {error}")
+                    logger.warning(f'Skipping page {page.title()}: {error}')
 
             # Update the links file
             LINK_FILE_PATH.write_text(
-                "\n".join(page.title() for page in links_to_redirects), encoding="utf-8"
+                '\n'.join(page.title() for page in links_to_redirects), encoding='utf-8'
             )
 
 
 class DraftCaseFileTask(Task):
     """Task to create the file for the DraftCaseTask to work on."""
 
-    name = "draft_case"
-    number = 2
+    name = 'draft_case_file'
+    number = 3
 
     def run(self) -> None:
         """Run the task."""
         redirect_pages = _get_redirect_pages()
-        logger.info(f"Found {len(redirect_pages)} redirect pages")
+        logger.info(f'Found {len(redirect_pages)} redirect pages')
 
         links_to_redirects = _get_links_to_redirects(redirect_pages)
-        logger.info(f"Found {len(links_to_redirects)} links to redirect pages")
+        logger.info(f'Found {len(links_to_redirects)} links to redirect pages')
 
         LINK_FILE_PATH.write_text(
-            "\n".join(page.title() for page in links_to_redirects), encoding="utf-8"
+            '\n'.join(page.title() for page in links_to_redirects), encoding='utf-8'
         )
 
         logger.success(
-            "Successfully created links_to_redirects.txt with links to redirect pages",
+            'Successfully created links_to_redirects.txt with links to redirect pages',
         )

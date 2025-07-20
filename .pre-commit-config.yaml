@@ -1,8 +1,8 @@
 ci:
-  autofix_commit_msg: Auto fixes from pre-commit hooks
+  autofix_commit_msg: "style: auto fixes from pre-commit hooks"
   autofix_prs: true
   autoupdate_branch: ''
-  autoupdate_commit_msg: Auto-update pre-commit hooks
+  autoupdate_commit_msg: "ci(pre-commit): auto-update hooks"
   autoupdate_schedule: weekly
   skip: []
   submodules: false
@@ -28,10 +28,3 @@ repos:
   - id: uv-lock
   repo: https://github.com/astral-sh/uv-pre-commit
   rev: 0.7.19
-- hooks:
-  - id: commitizen
-  - id: commitizen-branch
-    stages:
-    - pre-push
-  repo: https://github.com/commitizen-tools/commitizen
-  rev: v4.8.3

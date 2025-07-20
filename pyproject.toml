@@ -11,7 +11,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "bump-my-version>=1.2.0",
-    "commitizen>=4.8.3",
     "hatchling>=1.27.0",
     "poethepoet>=0.36.0",
     "pre-commit>=4.2.0",
@@ -31,7 +30,6 @@ build-backend = "hatchling.build"
 [tool.poe.tasks]
 bump = "bump-my-version bump"
 check = "pre-commit run --all-files"
-commit = "cz commit"
 coverage = "pytest --cov=bsoykabot --cov-branch --cov-report=xml"
 lock = "uv lock"
 login = "pwb generate_user_files"
@@ -40,17 +38,25 @@ run = "bsoykabot"
 sync = "uv sync --all-extras --dev"
 test = "pytest"
 
+[tool.ruff]
+preview = true
+
+[tool.ruff.format]
+docstring-code-format = true
+line-ending = "lf"
+quote-style = "single"
+
 [tool.ruff.lint]
-select = [
-    "A", "ANN", "ARG", "B", "BLE", "C4", "D", "E", "EM", "ERA", "FBT", "FIX", "FLY",
-    "FURB", "I", "ICN", "INP", "ISC", "N", "PERF", "PIE", "PLC", "PLE", "PLR", "PLW",
-    "PT", "PTH", "Q", "RET", "RSE", "RUF", "S", "SIM", "SLF", "T20", "TID", "TRY", "W",
-    "UP",
+select = ["ALL"]
+ignore = [
+    "CPY001", # Don't require file-level copyright notices.
+    "COM812" # Ignore trailing commas. Causes conflicts between checker and formatter.
 ]
-ignore = ["D203", "D213", "D413"]
+pydocstyle.convention = "google"
+flake8-quotes.inline-quotes = "single"
 
 [tool.ruff.lint.per-file-ignores]
-"*_test.py" = ["S101"]
+"*_test.py" = ["PLC2701", "S101"] # Allow private imports and assertions in test files.
 
 [tool.bumpversion]
 current_version = "0.5.3"
@@ -64,10 +70,10 @@ ignore_missing_files = false
 tag = true
 sign_tags = false
 tag_name = "v{new_version}"
-tag_message = "Bump version: {current_version} → {new_version}"
+tag_message = "chore: bump {current_version} → {new_version}"
 allow_dirty = false
 commit = true
-message = "Bump version: {current_version} → {new_version}"
+message = "chore: bump {current_version} → {new_version}"
 moveable_tags = []
 commit_args = ""
 setup_hooks = []
@@ -76,9 +82,3 @@ post_commit_hooks = []
 
 [[tool.bumpversion.files]]
 filename = "tasks/__init__.py"
-
-[tool.commitizen]
-name = "cz_conventional_commits"
-tag_format = "v$version"
-version_scheme = "semver"
-version_provider = "uv"
