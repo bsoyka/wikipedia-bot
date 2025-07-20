@@ -12,13 +12,11 @@ class Task:
     def __init__(self) -> None:
         """Initialize the task."""
 
-    @classmethod
-    def run(cls) -> None:
+    def run(self) -> None:
         """Run the task."""
         raise NotImplementedError
 
-    @classmethod
-    def make_edit_summary(cls, edits: str) -> str:
+    def make_edit_summary(self, edits: str) -> str:
         """Generate a standardized summary for edits made by the task.
 
         This allows a standard format, including a link to task information, the
@@ -32,7 +30,7 @@ class Task:
         """
         return (
             f'{edits} '
-            f'([[User:BsoykaBot/Task {cls.number}|Task {cls.number}]], '
+            f'([[User:BsoykaBot/Task {self.number}|Task {self.number}]], '
             f'v{__version__}, '
             '[[User talk:BsoykaBot|report errors]])'
         )
