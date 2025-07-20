@@ -18,7 +18,13 @@ PAGES_PER_BATCH = 1_000
 
 
 def _get_redirect_pages() -> set[pywikibot.Page]:
-    """Make a set of all capitalized NFL Draft pages to change."""
+    """Make a set of all capitalized NFL Draft pages to change.
+
+    Also includes pages with titles matching "List of ... in the NFL Draft".
+
+    Returns:
+        A set of redirect pages for "NFL Draft" and related pages.
+    """
     titles = {f'{year} NFL Draft' for year in range(1936, 2025)}
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
 
@@ -33,7 +39,14 @@ def _get_redirect_pages() -> set[pywikibot.Page]:
 
 
 def _get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot.Page]:
-    """Get all pages that link to the redirect pages."""
+    """Get all pages that link to the redirect pages.
+
+    Args:
+        redirect_pages: A set of redirect pages for "NFL Draft".
+
+    Returns:
+        A set of pages that link to the redirect pages.
+    """
     backlinks = set()
 
     for redirect in redirect_pages:
@@ -42,8 +55,15 @@ def _get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibo
     return backlinks
 
 
-def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
-    """Fix miscapitalized links to "NFL Draft" redirects in a page."""
+def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: C901, PLR0912
+    """Fix miscapitalized links to "NFL Draft" redirects in a page.
+
+    Args:
+        page: The page to fix links in.
+
+    Returns:
+        The modified text of the page if changes were made, otherwise the original text.
+    """
     non_cosmetic_changes = False
 
     text = page.text
@@ -110,7 +130,8 @@ class DraftCaseTask(Task):
     name = 'draft_case'
     number = 3
 
-    def run(self) -> None:
+    @classmethod
+    def run(cls) -> None:
         """Run the task."""
         # Get links from file
         if not LINK_FILE_PATH.exists():
@@ -145,7 +166,7 @@ class DraftCaseTask(Task):
                 logger.debug(f'Changes made to {page.title()}')
                 try:
                     page.save(
-                        summary=self.make_edit_summary(
+                        summary=cls.make_edit_summary(
                             'Fixing miscapitalization of NFL draft links'
                         ),
                         minor=True,
@@ -166,7 +187,8 @@ class DraftCaseFileTask(Task):
     name = 'draft_case_file'
     number = 3
 
-    def run(self) -> None:
+    @classmethod
+    def run(cls) -> None:
         """Run the task."""
         redirect_pages = _get_redirect_pages()
         logger.info(f'Found {len(redirect_pages)} redirect pages')

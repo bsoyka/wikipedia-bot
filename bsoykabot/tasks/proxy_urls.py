@@ -16,7 +16,15 @@ PROXY_CONFIG_PATH = Path(__file__).parent / 'proxy_config_domains.txt'
 
 
 def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
-    """Parse the domains to replace."""
+    """Parse the domains to replace.
+
+    Args:
+        proxy_config: Optional list of lines from the proxy config file.
+            If not provided, it will read from the default file.
+
+    Returns:
+        A set of domains to replace in the format 'domain.com'.
+    """
     if proxy_config is None:
         proxy_config = PROXY_CONFIG_PATH.read_text().splitlines()
 
@@ -57,7 +65,13 @@ def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
 def _process_page(
     page: pywikibot.Page, replacements: dict[str, str], task: Task
 ) -> None:
-    """Process a page."""
+    """Parse the domains to replace.
+
+    Args:
+        page: pywikibot.Page object to process.
+        replacements: A dictionary mapping proxy strings to their replacements.
+        task: Task object for logging and edit summary.
+    """
     text = page.text
 
     # Sort keys by length to avoid replacing substrings
