@@ -1,8 +1,8 @@
 ci:
-  autofix_commit_msg: "style: auto fixes from pre-commit hooks"
+  autofix_commit_msg: Auto fixes from pre-commit hooks
   autofix_prs: true
   autoupdate_branch: ''
-  autoupdate_commit_msg: "ci(pre-commit): auto-update hooks"
+  autoupdate_commit_msg: Auto-update pre-commit hooks
   autoupdate_schedule: weekly
   skip: []
   submodules: false
@@ -23,8 +23,15 @@ repos:
     id: ruff-check
   - id: ruff-format
   repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.12.2
+  rev: v0.12.5
 - hooks:
   - id: uv-lock
   repo: https://github.com/astral-sh/uv-pre-commit
-  rev: 0.7.19
+  rev: 0.8.3
+- hooks:
+  - id: commitizen
+  - id: commitizen-branch
+    stages:
+    - pre-push
+  repo: https://github.com/commitizen-tools/commitizen
+  rev: v4.8.3
