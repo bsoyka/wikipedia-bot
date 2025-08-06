@@ -32,9 +32,7 @@ jobs:
         uses: extractions/setup-just@e33e0265a09d6d736e2ee1e0eb685ef1de4669ff # v3.0.0
 
       - name: Run tests
-        run: just test ${TEST_ENV}
-        env:
-          TEST_ENV: "{% raw %}${{ matrix.python-version }}{% endraw %}"
+        run: just test
 
   coverage:
     name: Generate coverage report
