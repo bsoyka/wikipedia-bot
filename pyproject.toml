@@ -8,35 +8,43 @@ dependencies = [
     "sentry-sdk>=2.32.0",
 ]
 
-[dependency-groups]
-dev = [
-    "bump-my-version>=1.2.0",
-    "hatchling>=1.27.0",
-    "poethepoet>=0.36.0",
-    "pre-commit>=4.2.0",
-    "pylint>=3.3.7",
-    "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
-    "ruff>=0.12.2",
-]
-
 [project.scripts]
 bsoykabot = "bsoykabot.cli:main"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[dependency-groups]
+dev = [
+    "pre-commit >= 3.3.0",
+    "ruff >= 0.12.0",
+    "tox >= 4.24.1",
+    "tox-uv >= 1.21.0",
+]
+docs = [
+    "sphinx",
+]
+gha-update = [
+    "gha-update ; python_version >= '3.12'",
+]
+tests = [
+    "pytest",
+    "pytest-cov",
+    "tomli >= 1.1.0 ; python_version < '3.11'",
+]
+typing = [
+    "mypy",
+    "pytest",
+    "tomli",
+]
 
-[tool.poe.tasks]
-bump = "bump-my-version bump"
-check = "pre-commit run --all-files"
-coverage = "pytest --cov=bsoykabot --cov-branch --cov-report=xml"
-lock = "uv lock"
-login = "pwb generate_user_files"
-precommit = "pre-commit install"
-run = "bsoykabot"
-sync = "uv sync --all-extras --dev"
-test = "pytest"
+[build-system]
+requires = ["uv_build>=0.7.19,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+default-groups = ["dev", "tests", "typing"]
+
+[tool.uv.build-backend]
+module-name = "bsoykabot"
+module-root = "src"
 
 [tool.ruff]
 preview = true
@@ -49,36 +57,76 @@ quote-style = "single"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "CPY001", # Don't require file-level copyright notices.
-    "COM812" # Ignore trailing commas. Causes conflicts between checker and formatter.
+    "CPY",     # Checks for a file-level copyright statement.
+    "COM812",  # Checks for the absence of trailing commas. Not recommended with formatter.
+    "COM819",  # Checks for prohibited trailing commas. Not recommended with formatter.
+    "FIX002",  # Checks for to-do comments.
 ]
 pydocstyle.convention = "google"
 flake8-quotes.inline-quotes = "single"
+flake8-tidy-imports.ban-relative-imports = "all"
 
 [tool.ruff.lint.per-file-ignores]
-"*_test.py" = ["PLC2701", "S101"] # Allow private imports and assertions in test files.
+"*_test.py" = [
+    "INP",     # Checks for packages missing an __init__.py file.
+    "PLC2701", # Checks for private name imports.
+    "PLR2004", # Checks for "magic" values.
+    "S101",    # Checks for the use of assert statements.
+]
 
-[tool.bumpversion]
-current_version = "0.5.3"
-parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
-serialize = ["{major}.{minor}.{patch}"]
-search = "{current_version}"
-replace = "{new_version}"
-regex = false
-ignore_missing_version = false
-ignore_missing_files = false
-tag = true
-sign_tags = false
-tag_name = "v{new_version}"
-tag_message = "chore: bump {current_version} → {new_version}"
-allow_dirty = false
-commit = true
-message = "chore: bump {current_version} → {new_version}"
-moveable_tags = []
-commit_args = ""
-setup_hooks = []
-pre_commit_hooks = ["uv lock --upgrade-package wikipedia-bot", "git add uv.lock"]
-post_commit_hooks = []
+[tool.mypy]
+strict = true
 
-[[tool.bumpversion.files]]
-filename = "tasks/__init__.py"
+[[tool.mypy.overrides]]
+module = ["pywikibot.*"]
+ignore_missing_imports = true
+
+[tool.tox]
+env_list = [
+    "py3.13",
+    "style",
+    "typing",
+]
+
+[tool.tox.env_run_base]
+description = "run tests with pytest"
+runner = "uv-venv-lock-runner"
+package = "wheel"
+wheel_build_env = ".pkg"
+constrain_package_deps = true
+use_frozen_constraints = true
+dependency_groups = ["tests"]
+commands = [["pytest", {replace = "posargs", default = [], extend = true}]]
+
+[tool.tox.env.style]
+description = "run all pre-commit hooks on all files"
+dependency_groups = ["dev"]
+skip_install = true
+commands = [["pre-commit", "run", "--all-files"]]
+
+[tool.tox.env.typing]
+description = "run static type checkers"
+dependency_groups = ["typing"]
+commands = [["mypy", {replace = "posargs", default = ["."], extend = true}]]
+
+[tool.tox.env.update-actions]
+description = "update GitHub Actions pins"
+labels = ["update"]
+dependency_groups = ["gha-update"]
+skip_install = true
+commands = [["gha-update"]]
+
+[tool.tox.env.update-pre_commit]
+description = "update pre-commit pins"
+labels = ["update"]
+dependency_groups = ["dev"]
+skip_install = true
+commands = [["pre-commit", "autoupdate", "--freeze", "-j4"]]
+
+[tool.tox.env.update-requirements]
+description = "update uv lock"
+labels = ["update"]
+dependency_groups = []
+no_default_groups = true
+skip_install = true
+commands = [["uv", "lock", {replace = "posargs", default = ["-U"], extend = true}]]

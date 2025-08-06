@@ -16,7 +16,7 @@ provides tools for interacting with MediaWiki-based wikis, including Wikipedia.
 
 As [approved by the community](https://en.wikipedia.org/wiki/Wikipedia:Bots/Requests_for_approval), the bot performs various tasks, each on a different schedule. For information on the bot's tasks, see [its user page on Wikipedia](https://en.wikipedia.org/wiki/User:BsoykaBot).
 
-Generally, BsoykaBot's tasks are relatively simple scripts run as cron jobs. These scripts are invoked through the [`bsoykabot/tasks/__main__.py`](bsoykabot/tasks/__main__.py) file, which serves as a general entry point for the bot's tasks and passes the appropriate arguments to the task scripts.
+Generally, BsoykaBot's tasks are relatively simple scripts run as cron jobs. These scripts are invoked through the [`bsoykabot/tasks/__main__.py`](src/bsoykabot/tasks/__main__.py) file, which serves as a general entry point for the bot's tasks and passes the appropriate arguments to the task scripts.
 
 ## How you can help
 

@@ -18,7 +18,11 @@ PAGES_PER_BATCH = 1_000
 
 
 def _get_redirect_pages() -> set[pywikibot.Page]:
-    """Make a set of all capitalized NFL Draft pages to change."""
+    """Make a set of all capitalized NFL Draft pages to change.
+
+    Returns:
+        A set of page objects.
+    """
     titles = {f'{year} NFL Draft' for year in range(1936, 2025)}
     pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
 
@@ -33,7 +37,11 @@ def _get_redirect_pages() -> set[pywikibot.Page]:
 
 
 def _get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibot.Page]:
-    """Get all pages that link to the redirect pages."""
+    """Get all pages that link to the redirect pages.
+
+    Returns:
+        A set of page objects.
+    """
     backlinks = set()
 
     for redirect in redirect_pages:
@@ -42,17 +50,21 @@ def _get_links_to_redirects(redirect_pages: set[pywikibot.Page]) -> set[pywikibo
     return backlinks
 
 
-def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: PLR0912
-    """Fix miscapitalized links to "NFL Draft" redirects in a page."""
+def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: C901,PLR0912
+    """Fix miscapitalized links to "NFL Draft" redirects in a page.
+
+    Returns:
+        The updated page text.
+    """
     non_cosmetic_changes = False
 
-    text = page.text
+    text: str = page.text
     wikicode = mwparserfromhell.parse(text)
 
     links: list[mwparserfromhell.nodes.wikilink.Wikilink] = wikicode.filter_wikilinks()
 
     for link in links:
-        old_link_text: mwparserfromhell.Wikicode | None = link.text
+        old_link_text: mwparserfromhell.wikicode.Wikicode | None = link.text
 
         # Match link title to regex for "YEAR NFL Draft"
         if re.match(r'\d{4} NFL Draft', str(link.title)) or re.match(
@@ -166,7 +178,7 @@ class DraftCaseFileTask(Task):
     name = 'draft_case_file'
     number = 3
 
-    def run(self) -> None:
+    def run(self) -> None:  # noqa: PLR6301
         """Run the task."""
         redirect_pages = _get_redirect_pages()
         logger.info(f'Found {len(redirect_pages)} redirect pages')
