@@ -65,7 +65,7 @@ def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
 def _process_page(
     page: pywikibot.Page, replacements: dict[str, str], task: Task
 ) -> None:
-    """Parse the domains to replace.
+    """Process a page by replacing proxy URLs with their original domains.
 
     Args:
         page: pywikibot.Page object to process.
