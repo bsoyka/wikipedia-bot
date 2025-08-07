@@ -1,6 +1,6 @@
 [project]
 name = "bsoykabot"
-version = "0.5.3"
+version = "0.5.4"
 requires-python = ">=3.13"
 dependencies = [
     "loguru>=0.7.3",
