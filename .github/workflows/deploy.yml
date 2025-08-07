@@ -33,4 +33,4 @@ jobs:
             cd "${{ vars.BOT_DIRECTORY }}"
             git reset --hard
             git pull
-            uv sync --no-dev
+            ${{ vars.UV_PATH }} sync --no-dev
