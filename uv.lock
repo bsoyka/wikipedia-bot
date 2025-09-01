@@ -534,16 +534,16 @@ wheels = [
 
 [[package]]
 name = "pywikibot"
-version = "10.3.1"
+version = "10.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mwparserfromhell" },
     { name = "packaging" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3c/10/972ab56ef6e6dd3b6f974043dae6c9ff781f0e4ad49dd71f7fa267cf2e4d/pywikibot-10.3.1.tar.gz", hash = "sha256:76d8a57c64b9033339a1f0e1235ecd97d1742870e8d5b81af66624ddfd59d0fe", size = 622131, upload-time = "2025-08-08T14:19:47.184Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1c/58/4cfe574685543c9a4721d126374b0957bf5d78e85c1bbe4a92a61dc8b9a6/pywikibot-10.4.0.tar.gz", hash = "sha256:6690ffcd31d40d1fe8c0ff52ed64e2a59a0626e1ddb0e46cfbbc36deed48af17", size = 629411, upload-time = "2025-08-31T07:28:03.165Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/e1/c28bdab056de0312eda7deb3abcb70e5b4d6766bc7b91ee2b881bf3ac03f/pywikibot-10.3.1-py3-none-any.whl", hash = "sha256:ec0133bc1a9dcb0bef8d955074dca2d10e3af99bb9be489441992197c65a2e9b", size = 725946, upload-time = "2025-08-08T14:19:44.143Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/11/c52528c52402e698a459c8b575b3c8f2b83048a110dd708dbd06a5fbc227/pywikibot-10.4.0-py3-none-any.whl", hash = "sha256:d905fd682bfaad16f5d32e328cd8f8b34dfe1be63757727007b72f3367c81c53", size = 730672, upload-time = "2025-08-31T07:28:00.974Z" },
 ]
 
 [[package]]
