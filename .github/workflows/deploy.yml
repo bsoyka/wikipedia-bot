@@ -33,6 +33,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ vars.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
           port: ${{ vars.SSH_PORT }}
           request_pty: true
           script_stop: true
