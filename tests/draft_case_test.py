@@ -1,13 +1,12 @@
 """Test cases for the fix_nfl_draft_case task."""
 
+from datetime import UTC, datetime
 from pathlib import Path
-
-from pywikibot import Page
 
 from bsoykabot.tasks.draft_case import (
     LINK_FILE_PATH,
     PAGES_PER_BATCH,
-    _get_redirect_pages,
+    _redirect_titles,
 )
 
 
@@ -23,18 +22,27 @@ def test_task_constants() -> None:
     assert PAGES_PER_BATCH > 0, 'PAGES_PER_BATCH should be positive'
 
 
-def test_get_redirect_pages() -> None:
-    """Test that _get_redirect_pages returns a set of pages."""
-    redirect_pages = _get_redirect_pages()
+def test_redirect_titles() -> None:
+    """Test that _redirect_titles covers the expected year range.
 
-    assert isinstance(redirect_pages, set), '_get_redirect_pages should return a set'
-    assert len(redirect_pages) > 0, '_get_redirect_pages should return non-empty set'
+    This is a pure, offline test on purpose: the year range previously
+    shipped as a hardcoded ``range(1936, 2025)`` and silently went stale
+    once 2025 passed, so the coverage that matters here is the range
+    itself, not a live Wikipedia lookup.
+    """
+    titles = _redirect_titles()
 
-    assert all(isinstance(page, Page) for page in redirect_pages), (
-        'All items in the set should be pywikibot.Page objects'
+    assert isinstance(titles, set), '_redirect_titles should return a set'
+    assert '1936 NFL Draft' in titles, 'the earliest draft year should be included'
+    assert '1935 NFL Draft' not in titles, 'years before the first draft are excluded'
+
+    current_year = datetime.now(tz=UTC).year
+    assert f'{current_year} NFL Draft' in titles, (
+        "this year's draft should be included"
     )
-
-    # ruff: noqa: ERA001
-    # assert all("NFL Draft" in page.title() for page in redirect_pages), (
-    #     "All pages should include capitalized 'NFL Draft' in their titles"
-    # )
+    assert f'{current_year + 1} NFL Draft' in titles, (
+        "next year's draft is usually created in advance"
+    )
+    assert f'{current_year + 2} NFL Draft' not in titles, (
+        'the range should not reach two years out'
+    )

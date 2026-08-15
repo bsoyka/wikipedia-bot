@@ -4,6 +4,7 @@ See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_3 for more info.
 """
 
 import re
+from datetime import UTC, datetime
 from pathlib import Path
 
 import mwparserfromhell
@@ -16,6 +17,25 @@ from bsoykabot.tasks import Task
 LINK_FILE_PATH = Path(__file__).parent / 'links_to_redirects.txt'
 PAGES_PER_BATCH = 1_000
 
+FIRST_DRAFT_YEAR = 1936
+
+
+def _redirect_titles() -> set[str]:
+    """Build the titles of NFL Draft year-redirect pages to look up.
+
+    Draft articles for the upcoming year are typically created a year in
+    advance of the draft itself, so the range extends one year past the
+    current year.
+
+    Returns:
+        A set of page titles, e.g. '2024 NFL Draft'.
+    """
+    current_year = datetime.now(tz=UTC).year
+
+    return {
+        f'{year} NFL Draft' for year in range(FIRST_DRAFT_YEAR, current_year + 2)
+    }
+
 
 def _get_redirect_pages() -> set[pywikibot.Page]:
     """Make a set of all capitalized NFL Draft pages to change.
@@ -23,8 +43,7 @@ def _get_redirect_pages() -> set[pywikibot.Page]:
     Returns:
         A set of page objects.
     """
-    titles = {f'{year} NFL Draft' for year in range(1936, 2025)}
-    pages = set(pagegenerators.PagesFromTitlesGenerator(titles))
+    pages = set(pagegenerators.PagesFromTitlesGenerator(_redirect_titles()))
 
     pages.update(
         pagegenerators.SearchPageGenerator(
