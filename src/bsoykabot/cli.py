@@ -2,9 +2,6 @@
 
 import argparse
 
-import sentry_sdk
-
-from bsoykabot import __version__
 from bsoykabot.tasks import Task, draft_case, proxy_urls
 
 TASKS = {
@@ -18,11 +15,6 @@ TASKS_BY_NAME: dict[str, Task] = {task.name: task for task in TASKS}
 
 def main() -> None:
     """Enter the command-line interface."""
-    sentry_sdk.init(
-        dsn='https://e8243b175c82050eaa9ea7f2793d352b@o194227.ingest.us.sentry.io/4509610786422784',
-        release='wikipedia-bot@' + __version__,
-    )
-
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(title='subcommands', dest='subcommand')

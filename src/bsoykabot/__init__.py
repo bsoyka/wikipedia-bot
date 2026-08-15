@@ -1,3 +1,5 @@
 """Tasks run by BsoykaBot on the English Wikipedia."""
 
-__version__ = '0.5.3'
+from importlib.metadata import version
+
+__version__ = version('bsoykabot')
