@@ -3,14 +3,21 @@
 See https://en.wikipedia.org/wiki/User:BsoykaBot/Task_2 for more info.
 """
 
+from __future__ import annotations
+
+from functools import cache
 from pathlib import Path
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
-import pywikibot
-from loguru import logger
 from pywikibot import pagegenerators
 
-from bsoykabot.tasks import Task
+from bsoykabot.tasks import Discovered, Task
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    import pywikibot
 
 PROXY_CONFIG_PATH = Path(__file__).parent / 'proxy_config_domains.txt'
 
@@ -62,37 +69,30 @@ def _parse_domains(*, proxy_config: list[str] | None = None) -> set[str]:
     return result
 
 
-def _process_page(
-    page: pywikibot.Page, replacements: dict[str, str], task: Task
-) -> None:
-    """Process a page by replacing proxy URLs with their original domains.
+@cache
+def _replacements() -> tuple[tuple[str, str], ...]:
+    """Build the proxy-string-to-domain replacements, longest string first.
 
-    Args:
-        page: pywikibot.Page object to process.
-        replacements: A dictionary mapping proxy strings to their replacements.
-        task: Task object for logging and edit summary.
+    Cached so the config file is parsed, and the replacement map built,
+    once per process rather than on every page -- a cold-start cost on
+    Lambda instead of a per-page one.
+
+    Returns:
+        Pairs of (proxy string, replacement domain), sorted so a longer
+        proxy string is always tried before any of its substrings.
     """
-    text = page.text
+    domains = _parse_domains()
 
-    # Sort keys by length to avoid replacing substrings
-    for proxy_string, replacement in sorted(
-        replacements.items(),
-        key=lambda x: len(x[0]),
-        reverse=True,
-    ):
-        if proxy_string in text:
-            text = text.replace(proxy_string, replacement)
+    replacements: dict[str, str] = {}
+    for domain in domains:
+        replacements[domain.replace('.', '-') + '.wikipedialibrary.idm.oclc.org'] = (
+            domain
+        )
+        replacements[domain + '.wikipedialibrary.idm.oclc.org'] = domain
 
-    if text != page.text:
-        page.text = text
-
-        try:
-            page.save(
-                summary=task.make_edit_summary('Replacing [[WP:TWL|TWL]] proxy links'),
-                minor=True,
-            )
-        except pywikibot.exceptions.OtherPageSaveError as error:
-            logger.warning(f'Skipping page {page.title()}: {error}')
+    return tuple(
+        sorted(replacements.items(), key=lambda pair: len(pair[0]), reverse=True),
+    )
 
 
 class ProxyUrlsTask(Task):
@@ -100,30 +100,43 @@ class ProxyUrlsTask(Task):
 
     name = 'proxy_urls'
     number = 2
+    edit_summary_text = 'Replacing [[WP:TWL|TWL]] proxy links'
 
-    def run(self) -> None:
-        """Run the task."""
-        domains = _parse_domains()
-        logger.info(f'Parsed {len(domains)} domains')
+    def discover(  # noqa: PLR6301 -- part of the Task interface, not a free function
+        self,
+        cursor: str | None = None,
+    ) -> Iterator[Discovered]:
+        """Yield articles containing Wikipedia Library proxy URLs.
 
-        replacements = {}
+        Args:
+            cursor: Ignored; this task's discovery is cheap enough to
+                restart from the beginning every time.
 
-        for domain in domains:
-            replacements[
-                domain.replace('.', '-') + '.wikipedialibrary.idm.oclc.org'
-            ] = domain
-            replacements[domain + '.wikipedialibrary.idm.oclc.org'] = domain
+        Yields:
+            Each article containing a proxy URL.
+        """
+        del cursor
 
-        logger.info(f'Set up {len(replacements)} text replacements')
+        for page in pagegenerators.SearchPageGenerator(
+            'insource:"wikipedialibrary.idm.oclc.org"',
+            namespaces={0},
+        ):
+            yield Discovered(title=page.title())
 
-        pages_to_edit = set(
-            pagegenerators.SearchPageGenerator(
-                'insource:"wikipedialibrary.idm.oclc.org"',
-                namespaces={0},
-            ),
-        )
+    def handle(self, page: pywikibot.Page) -> str | None:  # noqa: PLR6301
+        """Replace proxy URLs in a page with their original domains.
 
-        logger.info(f'Found {len(pages_to_edit)} pages to edit')
+        Args:
+            page: The page to inspect.
 
-        for page in pages_to_edit:
-            _process_page(page, replacements, task=self)
+        Returns:
+            The new page text, or None if no proxy URLs were found.
+        """
+        original: str = page.text
+        text = original
+
+        for proxy_string, replacement in _replacements():
+            if proxy_string in text:
+                text = text.replace(proxy_string, replacement)
+
+        return text if text != original else None

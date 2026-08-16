@@ -1,23 +1,45 @@
 """Test cases for shared task utilities."""
 
+from collections.abc import Iterator
+
 import pytest
+import pywikibot
 
 from bsoykabot import __version__
-from bsoykabot.tasks import Task
+from bsoykabot.tasks import Discovered, Task
 
 
-def test_run_not_implemented() -> None:
-    """Test that the Task class raises NotImplementedError for run method."""
-    task = Task()
+class _StubTask(Task):
+    """A minimal concrete Task, for exercising shared base-class behavior."""
 
-    with pytest.raises(NotImplementedError):
-        task.run()
+    name = 'stub'
+    number = 123
+    edit_summary_text = 'Stub edit'
+
+    def discover(self, cursor: str | None = None) -> Iterator[Discovered]:  # noqa: PLR6301
+        """Yield nothing; this stub is only used for make_edit_summary.
+
+        Returns:
+            An empty iterator.
+        """
+        del cursor
+        return iter(())
+
+    def handle(self, page: pywikibot.Page) -> str | None:  # noqa: PLR6301
+        """Return no edit; this stub is only used for make_edit_summary."""
+        del page
+        return None
+
+
+def test_task_is_abstract() -> None:
+    """Test that Task cannot be instantiated directly."""
+    with pytest.raises(TypeError):
+        Task()  # type: ignore[abstract]
 
 
 def test_make_edit_summary() -> None:
-    """Test that the Task class generates accurate edit summaries."""
-    task = Task()
-    task.number = 123
+    """Test that a Task generates accurate edit summaries."""
+    task = _StubTask()
 
     assert task.make_edit_summary('Fixing links') == (
         f'Fixing links ([[User:BsoykaBot/Task 123|Task 123]], v{__version__}, '

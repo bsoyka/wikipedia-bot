@@ -1,25 +1,12 @@
 """Test cases for the fix_nfl_draft_case task."""
 
 from datetime import UTC, datetime
-from pathlib import Path
+from unittest.mock import Mock
 
-from bsoykabot.tasks.draft_case import (
-    LINK_FILE_PATH,
-    PAGES_PER_BATCH,
-    _redirect_titles,
-)
+import pytest
 
-
-def test_task_constants() -> None:
-    """Test that task constants are defined correctly."""
-    assert isinstance(LINK_FILE_PATH, Path), (
-        'LINK_FILE_PATH should be a pathlib.Path object'
-    )
-    assert LINK_FILE_PATH.is_absolute(), 'LINK_FILE_PATH should be an absolute path'
-    assert LINK_FILE_PATH.suffix == '.txt', 'LINK_FILE_PATH should have a .txt suffix'
-
-    assert isinstance(PAGES_PER_BATCH, int), 'PAGES_PER_BATCH should be an integer'
-    assert PAGES_PER_BATCH > 0, 'PAGES_PER_BATCH should be positive'
+from bsoykabot.tasks import draft_case
+from bsoykabot.tasks.draft_case import DraftCaseTask, _redirect_titles
 
 
 def test_redirect_titles() -> None:
@@ -37,12 +24,72 @@ def test_redirect_titles() -> None:
     assert '1935 NFL Draft' not in titles, 'years before the first draft are excluded'
 
     current_year = datetime.now(tz=UTC).year
-    assert f'{current_year} NFL Draft' in titles, (
-        "this year's draft should be included"
-    )
+    assert f'{current_year} NFL Draft' in titles, "this year's draft should be included"
     assert f'{current_year + 1} NFL Draft' in titles, (
         "next year's draft is usually created in advance"
     )
     assert f'{current_year + 2} NFL Draft' not in titles, (
         'the range should not reach two years out'
     )
+
+
+def _make_page(text: str) -> Mock:
+    """Build a mock pywikibot.Page with the given text.
+
+    Args:
+        text: The page's wikitext.
+
+    Returns:
+        A mock page.
+    """
+    page = Mock()
+    page.site = Mock()
+    page.text = text
+    return page
+
+
+def test_handle_is_idempotent() -> None:
+    """Test that handling already-fixed text produces no further edit.
+
+    This is the property that makes an SQS redelivery harmless rather than
+    a duplicate edit: once a link points directly at the (lowercase)
+    article instead of the capitalized redirect, it no longer matches the
+    pattern this task looks for, so a second pass must be a no-op. No
+    redirect lookup happens here, so this stays offline.
+    """
+    task = DraftCaseTask()
+    already_fixed = _make_page('The [[2020 NFL draft]] was held in April.')
+
+    assert task.handle(already_fixed) is None
+
+
+def test_handle_fixes_miscapitalized_link(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that handle rewrites a link to a miscapitalized redirect."""
+    monkeypatch.setattr(
+        draft_case,
+        '_resolve_redirect_target',
+        lambda site, title: '2020 NFL draft',  # noqa: ARG005
+    )
+
+    task = DraftCaseTask()
+    page = _make_page('The [[2020 NFL Draft]] was held in April.')
+
+    result = task.handle(page)
+
+    assert result == 'The [[2020 NFL draft]] was held in April.'
+
+
+def test_handle_leaves_non_redirect_links_alone(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that handle makes no change when the link isn't a redirect."""
+    monkeypatch.setattr(
+        draft_case,
+        '_resolve_redirect_target',
+        lambda site, title: None,  # noqa: ARG005
+    )
+
+    task = DraftCaseTask()
+    page = _make_page('The [[2020 NFL Draft]] was held in April.')
+
+    assert task.handle(page) is None

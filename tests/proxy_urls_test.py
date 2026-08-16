@@ -2,14 +2,7 @@
 
 from unittest.mock import Mock
 
-from pywikibot.exceptions import OtherPageSaveError
-
-from bsoykabot.tasks import Task
-from bsoykabot.tasks.proxy_urls import _parse_domains, _process_page
-
-TEST_REPLACEMENTS = {
-    'www-newspapers-com.wikipedialibrary.idm.oclc.org': 'www.newspapers.com'
-}
+from bsoykabot.tasks.proxy_urls import ProxyUrlsTask, _parse_domains, _replacements
 
 
 def test_parse_domains() -> None:
@@ -36,53 +29,58 @@ def test_parse_domains() -> None:
     }
 
 
-def test_process_page() -> None:
-    """Test that _process_page correctly replaces proxy URLs."""
-    # Create a mock Task object
-    mock_task = Mock(spec=Task)
+def _make_page(text: str) -> Mock:
+    """Build a mock pywikibot.Page with the given text.
 
-    # Create a mock page
-    mock_page = Mock()
-    mock_page.text = 'www-newspapers-com.wikipedialibrary.idm.oclc.org'
+    Args:
+        text: The page's wikitext.
 
-    # Call the function with the mock page
-    _process_page(mock_page, TEST_REPLACEMENTS, task=mock_task)
-
-    # Check that the page's text was updated and saved
-    assert mock_page.text == 'www.newspapers.com'
-    mock_page.save.assert_called_once()
+    Returns:
+        A mock page.
+    """
+    page = Mock()
+    page.text = text
+    return page
 
 
-def test_process_page_no_change() -> None:
-    """Test that _process_page does not change text if no proxy URLs are present."""
-    # Create a mock Task object
-    mock_task = Mock(spec=Task)
+def test_handle_replaces_proxy_url() -> None:
+    """Test that handle replaces a proxy URL with the original domain."""
+    task = ProxyUrlsTask()
+    page = _make_page('www-newspapers-com.wikipedialibrary.idm.oclc.org')
 
-    # Create a mock page
-    mock_page = Mock()
-    mock_page.text = 'www.example.com'
+    result = task.handle(page)
 
-    # Call the function with the mock page
-    _process_page(mock_page, TEST_REPLACEMENTS, task=mock_task)
-
-    # Check that the page's text was not updated and the page was not saved
-    assert mock_page.text == 'www.example.com'
-    mock_page.save.assert_not_called()
+    assert result == 'www.newspapers.com'
 
 
-def test_process_page_save_error() -> None:
-    """Test that _process_page gracefully handles a save error."""
-    # Create a mock Task object
-    mock_task = Mock(spec=Task)
+def test_handle_no_change() -> None:
+    """Test that handle returns None if no proxy URLs are present."""
+    task = ProxyUrlsTask()
+    page = _make_page('www.example.com')
 
-    # Create a mock page
-    mock_page = Mock()
-    mock_page.text = 'www-newspapers-com.wikipedialibrary.idm.oclc.org'
-    mock_page.save.side_effect = OtherPageSaveError(page=mock_page, reason='Error')
+    assert task.handle(page) is None
 
-    # Call the function with the mock page
-    _process_page(mock_page, TEST_REPLACEMENTS, task=mock_task)
 
-    # Check that the page's text was updated and saved
-    assert mock_page.text == 'www.newspapers.com'
-    mock_page.save.assert_called_once()
+def test_handle_is_idempotent() -> None:
+    """Test that handling already-fixed text produces no further edit.
+
+    This is the property that makes an SQS redelivery harmless rather than
+    a duplicate edit: after one pass, no proxied hostname remains in the
+    text, so a second pass must be a no-op.
+    """
+    task = ProxyUrlsTask()
+    already_fixed = _make_page('www.newspapers.com')
+
+    assert task.handle(already_fixed) is None
+
+
+def test_replacements_are_sorted_longest_first() -> None:
+    """Test that _replacements orders pairs by descending key length.
+
+    Longer proxy strings must be tried before any of their substrings, or a
+    shorter match could partially replace a longer one.
+    """
+    pairs = _replacements()
+    lengths = [len(proxy_string) for proxy_string, _ in pairs]
+
+    assert lengths == sorted(lengths, reverse=True)
