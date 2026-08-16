@@ -61,6 +61,30 @@ test env='':
 [group('contribute')]
 typing: (test 'typing')
 
+# build the Lambda dependency layer (build/layer/python)
+[group('deploy')]
+build-layer:
+    ./scripts/build_lambda.sh layer
+
+# build the Lambda function code artifact (build/code)
+[group('deploy')]
+build-code:
+    ./scripts/build_lambda.sh code
+
+# build both Lambda deployment artifacts
+[group('deploy')]
+build: build-layer build-code
+
+# preview infrastructure changes
+[group('deploy')]
+tf-plan: build
+    cd infra && terraform plan -var-file=prod.tfvars
+
+# apply infrastructure changes
+[group('deploy')]
+tf-apply: build
+    cd infra && terraform apply -var-file=prod.tfvars
+
 # bump the version number
 [group('maintain')]
 bump type:
