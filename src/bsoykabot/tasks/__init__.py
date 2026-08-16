@@ -6,18 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-# Importing bsoykabot.wiki here (rather than each task submodule importing
-# pywikibot on its own) guarantees the credential bootstrap in
-# bsoykabot.wiki._bootstrap runs before bsoykabot.tasks.draft_case or
-# bsoykabot.tasks.proxy_urls -- both genuine, direct users of pywikibot --
-# are imported. Python always finishes initializing a package (this file)
-# before importing any of its submodules, so this holds regardless of how
-# ruff's isort orders this file's own imports. See bsoykabot.wiki for the
-# full explanation.
-from bsoykabot import (
-    __version__,
-    wiki,  # noqa: F401
-)
+from bsoykabot import __version__
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
