@@ -16,7 +16,7 @@ provides tools for interacting with MediaWiki-based wikis, including Wikipedia.
 
 As [approved by the community](https://en.wikipedia.org/wiki/Wikipedia:Bots/Requests_for_approval), the bot performs various tasks, each on a different schedule. For information on the bot's tasks, see [its user page on Wikipedia](https://en.wikipedia.org/wiki/User:BsoykaBot).
 
-Generally, BsoykaBot's tasks are relatively simple scripts run as cron jobs. These scripts are invoked through the [`bsoykabot/tasks/__main__.py`](src/bsoykabot/tasks/__main__.py) file, which serves as a general entry point for the bot's tasks and passes the appropriate arguments to the task scripts.
+Each task implements a `discover()` method, which finds the pages that might need editing, and a `handle()` method, which computes the new text for one page. The [`bsoykabot`](src/bsoykabot/cli.py) command-line entry point runs both in one process; in production, they run as separate AWS Lambda functions connected by an SQS queue (see [`infra/README.md`](infra/README.md)) — but that split never changes a task's actual logic, since both paths call the same two methods.
 
 ## How you can help
 
@@ -50,42 +50,27 @@ This should also automatically install an appropriate Python version if one is n
 
 Once you've set up your virtual environment with the previous command, you can use the `uv run` command to execute scripts and other commands within that environment. For further information, see [uv's documentation](https://docs.astral.sh/uv/reference/cli/#uv-run).
 
-### Poe the Poet
+### just
 
-Poe the Poet is a task runner set up to provide aliases for many commands you may need to run while working on BsoykaBot.
-
-You can also install it globally using uv:
-```shell
-uv tool install poethepoet
-```
-
-This allows you to replace `uv run poe` in the examples throughout this document with only `poe`.
+[just](https://github.com/casey/just) is a task runner set up to provide aliases for many commands you may need to run while working on BsoykaBot. Install it with your package manager of choice (e.g. `brew install just`), then run `just --list` in the project directory to see everything available.
 
 ### Pywikibot
 
 Pywikibot has a script to generate the necessary files to authenticate your bot. This command will guide you through creating the `user-config.py` and `user-password.py` files in the project directory:
 ```shell
-uv run poe login
+uv run pwb generate_user_files
 ```
 
 ### pre-commit
 
 pre-commit adds a few hooks to your Git configuration to run some style checks before you commit your changes. Set it up with this command:
 ```shell
-uv run poe precommit
+just install-hooks
 ```
 
 If you'd like to run the checks across all files in the repo on demand (rather than just those you've edited in your commit), run this command:
 ```shell
-uv run poe check
-```
-
-### Commitizen
-
-This project uses Commitizen to standardize commit messages. Stage your changes and commit using these commands:
-```shell
-git add .
-poe commit
+just check
 ```
 
 ### Ruff
@@ -104,12 +89,8 @@ These commands are also included in the pre-commit hooks—they'll be run before
 
 Unit testing is done with Pytest. See existing files in [`tests/`](tests) for examples on how this is done, and run the full suite of tests with this command:
 ```shell
-uv run poe test
+just test
 ```
-
-### Sentry
-
-In production, errors are automatically tracked and logged using Sentry. There's no further setup needed in your environment, but it's a tool worth noting so you understand its presence.
 
 ## Code review and deployment
 
@@ -121,4 +102,6 @@ Once you make a pull request, you'll get automated feedback from a few services:
 
 As soon as possible, you'll see a human review from me, @bsoyka. If there are any other changes I'd like to see, I'll help you through them.
 
-Once your pull request is fully approved, both by me and my army of robots, it'll be merged into the `main` branch. I'll update the bot's version number following the merge (using [Bump My Version](https://callowayproject.github.io/bump-my-version/)). A new tag/release will be created shortly after, triggering the new code to deploy to the bot's server.
+Once your pull request is fully approved, both by me and my army of robots, it'll be merged into the `main` branch. I'll update the bot's version number following the merge with `just bump <major|minor|patch>`. A new tag/release will be created shortly after, triggering a deploy.
+
+The bot runs on AWS (see [`infra/README.md`](infra/README.md) for the infrastructure and how deploys work); deploys are applied manually with `just tf-apply` rather than from CI for now.
