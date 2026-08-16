@@ -90,8 +90,9 @@ The bot edits real Wikipedia articles, so bring the pipeline up in stages
 rather than flipping it on all at once:
 
 1. **Dry run.** Leave `simulate = true` (the default) and both schedules
-   disabled (`schedules_enabled = false`, also the default). Apply, then
-   invoke a discovery function manually:
+   disabled (`proxy_urls_schedule_enabled` / `draft_case_schedule_enabled`
+   = `false`, also the defaults). Apply, then invoke a discovery function
+   manually:
 
    ```shell
    aws lambda invoke --function-name wikipedia-bot-discover-proxy-urls --payload '{}' /dev/stdout
@@ -108,10 +109,12 @@ rather than flipping it on all at once:
    [Special:Contributions/BsoykaBot](https://en.wikipedia.org/wiki/Special:Contributions/BsoykaBot)
    for the first handful of edits before trusting it further.
 
-3. **Enable that task's schedule.** Set `schedules_enabled = true`
-   (currently a single variable covering both schedules -- split it in
-   `scheduler.tf` if you want to stage the two tasks independently) and
-   apply.
+3. **Enable that task's schedule.** Set `proxy_urls_schedule_enabled = true`
+   (or `draft_case_schedule_enabled`) and apply. The two are independent, so
+   enabling one doesn't affect the other -- but `simulate` is not: it's one
+   Pywikibot session shared by the worker across both tasks' queues, so
+   flipping it to `false` enables real writes for whichever task's messages
+   the worker happens to pick up next, not just the one you're staging.
 
 4. **Repeat for the other task.**
 

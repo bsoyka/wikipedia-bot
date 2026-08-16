@@ -11,7 +11,7 @@ resource "aws_scheduler_schedule" "discover_proxy_urls" {
   }
 
   schedule_expression = "cron(0 9 * * ? *)" # daily, 09:00 UTC
-  state               = var.schedules_enabled ? "ENABLED" : "DISABLED"
+  state               = var.proxy_urls_schedule_enabled ? "ENABLED" : "DISABLED"
 
   target {
     arn      = aws_lambda_function.discover_proxy_urls.arn
@@ -32,7 +32,7 @@ resource "aws_scheduler_schedule" "discover_draft_case" {
   }
 
   schedule_expression = "cron(0 3 ? * SUN *)" # weekly, Sunday 03:00 UTC
-  state               = var.schedules_enabled ? "ENABLED" : "DISABLED"
+  state               = var.draft_case_schedule_enabled ? "ENABLED" : "DISABLED"
 
   target {
     arn      = aws_lambda_function.discover_draft_case.arn

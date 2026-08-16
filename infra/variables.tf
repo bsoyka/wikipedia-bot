@@ -39,14 +39,21 @@ variable "simulate" {
   EOT
 }
 
-variable "schedules_enabled" {
+variable "proxy_urls_schedule_enabled" {
   type        = bool
   default     = false
   description = <<-EOT
-    Whether the EventBridge schedules are enabled. Starts false so the
-    pipeline can be exercised with manual invocations before it runs
-    unattended.
+    Whether the proxy_urls EventBridge schedule is enabled. Starts false so
+    the pipeline can be exercised with manual invocations before it runs
+    unattended. Independent of draft_case_schedule_enabled so each task's
+    rollout to a real schedule can be staged separately.
   EOT
+}
+
+variable "draft_case_schedule_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether the draft_case EventBridge schedule is enabled. See proxy_urls_schedule_enabled."
 }
 
 variable "log_retention_days" {
