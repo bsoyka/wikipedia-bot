@@ -64,9 +64,8 @@ resource "aws_lambda_function" "discover_proxy_urls" {
 
   environment {
     variables = merge(local.common_environment, {
-      # No BSOYKABOT_MAX_DISCOVER: this task had no enqueue cap before
-      # this migration, and gets none now -- see BSOYKABOT_MAX_DISCOVER's
-      # description on the draft_case function below.
+      # No BSOYKABOT_MAX_DISCOVER: see max_discover_draft_case's
+      # description in variables.tf for why this task doesn't need one.
       BSOYKABOT_QUEUE_URL = aws_sqs_queue.proxy_urls.url
     })
   }
@@ -105,9 +104,7 @@ resource "aws_lambda_function" "discover_draft_case" {
 
   environment {
     variables = merge(local.common_environment, {
-      BSOYKABOT_QUEUE_URL = aws_sqs_queue.draft_case.url
-      # Reproduces the previous PAGES_PER_BATCH cap, so this task's
-      # on-wiki edit rate doesn't change as part of this migration.
+      BSOYKABOT_QUEUE_URL    = aws_sqs_queue.draft_case.url
       BSOYKABOT_MAX_DISCOVER = tostring(var.max_discover_draft_case)
     })
   }

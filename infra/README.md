@@ -67,10 +67,10 @@ main account password, so it can be scoped and revoked independently.
    name (`aws_secretsmanager_secret.wikipedia`) -- its value is never in
    tfvars or state.
 
-   If you're running this alongside the bot's old SSH-server deployment
-   during the migration, use a **different** bot password than the server's,
-   so each can be revoked independently and the two are distinguishable in
-   Wikipedia's API logs.
+   If you ever need to run this bot's logic somewhere else in parallel (a
+   second environment, local testing against real credentials), use a
+   **different** bot password there too, so each can be revoked
+   independently and the two are distinguishable in Wikipedia's API logs.
 
 ## Everyday commands
 
@@ -126,16 +126,3 @@ first time you apply -- confirm it, or you won't receive alerts. See
 particular are the only thing that would catch a bug that makes every save
 silently no-op, since Sentry isn't part of this design.
 
-## Decommissioning the old SSH deployment
-
-Once the AWS pipeline has run cleanly for a full cycle of both tasks (at
-least one weekly `draft_case` run and a few days of daily `proxy_urls`
-runs):
-
-1. Remove the server's crontab entries.
-2. Delete the `deploy` job from `.github/workflows/deploy.yml` and its
-   associated secrets/vars (`SSH_HOST`, `SSH_KEY`, `SSH_USERNAME`,
-   `SSH_PORT`, `BOT_DIRECTORY`, `UV_PATH`).
-3. Revoke the server's bot password on Special:BotPasswords -- separately
-   from the Lambda one, if you followed the advice above.
-4. Decommission the server itself.

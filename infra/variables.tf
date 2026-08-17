@@ -21,10 +21,9 @@ variable "max_discover_draft_case" {
   default     = 1000
   description = <<-EOT
     Maximum pages a single draft_case discovery run (across any
-    self-invoked continuations) will enqueue, reproducing the previous
-    PAGES_PER_BATCH cap so this task's on-wiki edit rate doesn't change as
-    part of this migration. proxy_urls had no equivalent cap before this
-    migration and gets none now.
+    self-invoked continuations) will enqueue. proxy_urls has no equivalent
+    cap, since its discovery is a single bounded search rather than an
+    open-ended backlink walk.
   EOT
 }
 
