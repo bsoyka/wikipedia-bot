@@ -2,14 +2,11 @@
 
 import argparse
 
-import sentry_sdk
-
-from bsoykabot import __version__
+from bsoykabot.runner import run_locally
 from bsoykabot.tasks import Task, draft_case, proxy_urls
 
 TASKS = {
     draft_case.DraftCaseTask(),
-    draft_case.DraftCaseFileTask(),
     proxy_urls.ProxyUrlsTask(),
 }
 
@@ -18,25 +15,35 @@ TASKS_BY_NAME: dict[str, Task] = {task.name: task for task in TASKS}
 
 def main() -> None:
     """Enter the command-line interface."""
-    sentry_sdk.init(
-        dsn='https://e8243b175c82050eaa9ea7f2793d352b@o194227.ingest.us.sentry.io/4509610786422784',
-        release='wikipedia-bot@' + __version__,
-    )
-
     parser = argparse.ArgumentParser()
 
     subparsers = parser.add_subparsers(title='subcommands', dest='subcommand')
 
     for task in TASKS:
-        subparsers.add_parser(
+        subparser = subparsers.add_parser(
             task.name,
             help=f'Task {task.number}',
+        )
+        subparser.add_argument(
+            '--limit',
+            type=int,
+            default=None,
+            help='Maximum number of pages to edit before stopping.',
+        )
+        subparser.add_argument(
+            '--dry-run',
+            action='store_true',
+            help='Compute edits without saving them.',
         )
 
     args = parser.parse_args()
 
     if args.subcommand in TASKS_BY_NAME:
-        TASKS_BY_NAME[args.subcommand].run()
+        run_locally(
+            TASKS_BY_NAME[args.subcommand],
+            limit=args.limit,
+            dry_run=args.dry_run,
+        )
     else:
         parser.print_help()
 
