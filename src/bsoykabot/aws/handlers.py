@@ -16,6 +16,7 @@ import boto3
 import pywikibot
 from loguru import logger
 
+from bsoykabot.aws.metrics import emit_page_outcome, emit_pages_discovered
 from bsoykabot.aws.queue import ENQUEUE_BATCH_SIZE, send_batch
 from bsoykabot.tasks import draft_case, proxy_urls
 from bsoykabot.wiki.editor import save_page
@@ -96,6 +97,7 @@ def _discover(task: Task, event: DiscoverEvent, context: LambdaContext) -> None:
 
     max_discover = _max_discover()
     enqueued_total = event.get('enqueued_total', 0)
+    enqueued_this_invocation = 0
     queue_url = os.environ['BSOYKABOT_QUEUE_URL']
     sqs = boto3.client('sqs')
 
@@ -107,11 +109,13 @@ def _discover(task: Task, event: DiscoverEvent, context: LambdaContext) -> None:
             logger.info(f'Reached BSOYKABOT_MAX_DISCOVER={max_discover}; stopping.')
             if titles:
                 send_batch(sqs, queue_url, task_name=task.name, titles=titles)
+            emit_pages_discovered(task.name, enqueued_this_invocation)
             return
 
         titles.append(discovered.title)
         resume_cursor = discovered.cursor
         enqueued_total += 1
+        enqueued_this_invocation += 1
 
         if len(titles) == ENQUEUE_BATCH_SIZE:
             send_batch(sqs, queue_url, task_name=task.name, titles=titles)
@@ -127,11 +131,13 @@ def _discover(task: Task, event: DiscoverEvent, context: LambdaContext) -> None:
                 generation=generation + 1,
                 enqueued_total=enqueued_total,
             )
+            emit_pages_discovered(task.name, enqueued_this_invocation)
             return
 
     if titles:
         send_batch(sqs, queue_url, task_name=task.name, titles=titles)
 
+    emit_pages_discovered(task.name, enqueued_this_invocation)
     logger.info(f'Finished discovery for {task.name}: enqueued {enqueued_total} pages.')
 
 
@@ -208,10 +214,15 @@ def process(event: SQSEvent, context: LambdaContext) -> BatchResponse:
 
         try:
             text = task.handle(page)
-            if text is not None:
-                save_page(page, text, task=task)
+            if text is None:
+                emit_page_outcome(task.name, 'no_change')
+            elif save_page(page, text, task=task):
+                emit_page_outcome(task.name, 'edited')
+            else:
+                emit_page_outcome(task.name, 'blocked')
         except Exception:  # noqa: BLE001 -- see the docstring above
             logger.exception(f'Failed to process {message["title"]!r} ({task.name})')
+            emit_page_outcome(task.name, 'error')
             failures.append({'itemIdentifier': record['messageId']})
 
     return {'batchItemFailures': failures}
