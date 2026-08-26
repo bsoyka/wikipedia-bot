@@ -12,12 +12,12 @@ locals {
   # the same base configuration; only the queue URL (and, for discovery
   # functions, the enqueue cap) differs.
   common_environment = {
-    HOME                         = "/tmp"
-    PYWIKIBOT_DIR                = "/tmp/pywikibot"
-    BSOYKABOT_CREDENTIALS_SECRET = aws_secretsmanager_secret.wikipedia.name
-    BSOYKABOT_PUT_THROTTLE       = tostring(var.put_throttle_seconds)
-    BSOYKABOT_SIMULATE           = var.simulate ? "1" : "0"
-    BSOYKABOT_LOG_LEVEL          = "INFO"
+    HOME                            = "/tmp"
+    PYWIKIBOT_DIR                   = "/tmp/pywikibot"
+    BSOYKABOT_CREDENTIALS_PARAMETER = aws_ssm_parameter.wikipedia.name
+    BSOYKABOT_PUT_THROTTLE          = tostring(var.put_throttle_seconds)
+    BSOYKABOT_SIMULATE              = var.simulate ? "1" : "0"
+    BSOYKABOT_LOG_LEVEL             = "INFO"
   }
 }
 

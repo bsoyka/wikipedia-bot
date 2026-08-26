@@ -13,17 +13,34 @@ data "aws_iam_policy_document" "lambda_assume_role" {
   }
 }
 
-# Every function bootstraps Pywikibot's credentials from Secrets Manager at
+# The parameter is a SecureString encrypted with the account's default SSM
+# key, so decrypting it on read needs kms:Decrypt on that key in addition to
+# ssm:GetParameter -- the key's own policy allowing the account isn't enough,
+# each role's identity policy must grant it too.
+data "aws_kms_alias" "ssm" {
+  name = "alias/aws/ssm"
+}
+
+# Every function bootstraps Pywikibot's credentials from Parameter Store at
 # cold start (see bsoykabot.wiki._bootstrap), so all three roles need read
-# access to the one secret regardless of what else they do.
+# access to the one parameter regardless of what else they do.
 data "aws_iam_policy_document" "read_wikipedia_credentials" {
   statement {
     sid    = "AllowReadWikipediaCredentials"
     effect = "Allow"
 
-    actions = ["secretsmanager:GetSecretValue"]
+    actions = ["ssm:GetParameter"]
 
-    resources = [aws_secretsmanager_secret.wikipedia.arn]
+    resources = [aws_ssm_parameter.wikipedia.arn]
+  }
+
+  statement {
+    sid    = "AllowDecryptWithSsmKey"
+    effect = "Allow"
+
+    actions = ["kms:Decrypt"]
+
+    resources = [data.aws_kms_alias.ssm.target_key_arn]
   }
 }
 

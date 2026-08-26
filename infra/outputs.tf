@@ -1,6 +1,6 @@
-output "wikipedia_secret_arn" {
-  value       = aws_secretsmanager_secret.wikipedia.arn
-  description = "ARN of the Secrets Manager secret holding the bot's Wikipedia credentials -- set its value out-of-band, see infra/README.md."
+output "wikipedia_parameter_arn" {
+  value       = aws_ssm_parameter.wikipedia.arn
+  description = "ARN of the Parameter Store parameter holding the bot's Wikipedia credentials -- set its value out-of-band, see infra/README.md."
 }
 
 output "discover_proxy_urls_function_name" {

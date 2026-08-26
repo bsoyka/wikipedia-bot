@@ -43,7 +43,7 @@ tags = {
 
 See [`variables.tf`](variables.tf) for every variable and its default.
 
-### 3. The Wikipedia credentials secret
+### 3. The Wikipedia credentials parameter
 
 The bot authenticates with a
 [BotPassword](https://www.mediawiki.org/wiki/Special:BotPasswords), not the
@@ -54,18 +54,22 @@ main account password, so it can be scoped and revoked independently.
 2. Create a new bot password (e.g. named `lambda`) with at least the
    `Edit existing pages` and `High-volume editing` grants. Note the
    generated password -- it's shown only once.
-3. Create the secret and set its value:
+3. Set the parameter's real value (Terraform creates it with a placeholder
+   value and then ignores further changes to it, so this needs to run once
+   after the first `terraform apply` and again after any password rotation):
 
    ```shell
-   aws secretsmanager create-secret \
-     --name wikipedia-bot/prod/external/wikipedia \
-     --secret-string '{"username": "BsoykaBot", "bot_name": "lambda", "bot_password": "..."}'
+   aws ssm put-parameter \
+     --name /wikipedia-bot/prod/external/wikipedia \
+     --type SecureString \
+     --overwrite \
+     --value '{"username": "BsoykaBot", "bot_name": "lambda", "bot_password": "..."}'
    ```
 
    `username` is the bot's main account name; `bot_name` and `bot_password`
-   are what Special:BotPasswords generated. Terraform reads this secret by
-   name (`aws_secretsmanager_secret.wikipedia`) -- its value is never in
-   tfvars or state.
+   are what Special:BotPasswords generated. Terraform manages this
+   parameter by name (`aws_ssm_parameter.wikipedia`) but ignores its value
+   -- the real value is never in tfvars or state.
 
    If you ever need to run this bot's logic somewhere else in parallel (a
    second environment, local testing against real credentials), use a

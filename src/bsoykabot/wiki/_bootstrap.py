@@ -24,7 +24,7 @@ _PRIVATE_FILE_MODE = stat.S_IRUSR | stat.S_IWUSR  # 0o600, as Pywikibot requires
 def bootstrap() -> None:
     """Materialize Pywikibot's configuration files under a writable directory.
 
-    A no-op locally, where ``BSOYKABOT_CREDENTIALS_SECRET`` isn't set and
+    A no-op locally, where ``BSOYKABOT_CREDENTIALS_PARAMETER`` isn't set and
     Pywikibot falls back to ``~/.pywikibot`` as usual, and a no-op on a warm
     Lambda invocation, where the files already exist from a previous
     invocation in the same execution environment.
@@ -37,8 +37,8 @@ def bootstrap() -> None:
             ``bsoykabot.wiki.site.get_site`` for the second half of that
             guard.
     """
-    secret_id = os.environ.get('BSOYKABOT_CREDENTIALS_SECRET')
-    if secret_id is None:
+    parameter_name = os.environ.get('BSOYKABOT_CREDENTIALS_PARAMETER')
+    if parameter_name is None:
         return
 
     directory = Path(os.environ.get('PYWIKIBOT_DIR', _DEFAULT_PYWIKIBOT_DIR))
@@ -48,7 +48,7 @@ def bootstrap() -> None:
     if config_file.exists() and password_file.exists():
         return
 
-    credentials = _fetch_credentials(secret_id)
+    credentials = _fetch_credentials(parameter_name)
 
     directory.mkdir(parents=True, exist_ok=True)
     _write_private(config_file, _render_user_config(credentials['username']))
@@ -59,18 +59,19 @@ def bootstrap() -> None:
         raise RuntimeError(msg)
 
 
-def _fetch_credentials(secret_id: str) -> dict[str, str]:
-    """Fetch the bot's Wikipedia credentials from Secrets Manager.
+def _fetch_credentials(parameter_name: str) -> dict[str, str]:
+    """Fetch the bot's Wikipedia credentials from Parameter Store.
 
     Args:
-        secret_id: The name or ARN of the secret holding the credentials.
+        parameter_name: The name or ARN of the SecureString parameter
+            holding the credentials.
 
     Returns:
         A mapping with 'username', 'bot_name', and 'bot_password' keys.
     """
-    client = boto3.client('secretsmanager')
-    response = client.get_secret_value(SecretId=secret_id)
-    payload: dict[str, str] = json.loads(response['SecretString'])
+    client = boto3.client('ssm')
+    response = client.get_parameter(Name=parameter_name, WithDecryption=True)
+    payload: dict[str, str] = json.loads(response['Parameter']['Value'])
     return payload
 
 
@@ -129,8 +130,8 @@ def _render_password_file(credentials: dict[str, str]) -> str:
 
     Uses a `BotPassword
     <https://www.mediawiki.org/wiki/Special:BotPasswords>`_ entry rather
-    than the main account password, so the credential stored in Secrets
-    Manager can be scoped and revoked independently of the main account.
+    than the main account password, so the credential stored in Parameter
+    Store can be scoped and revoked independently of the main account.
 
     Args:
         credentials: The bot's Wikipedia credentials.

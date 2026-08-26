@@ -31,7 +31,7 @@ tests = [
     "tomli >= 1.1.0 ; python_version < '3.11'",
 ]
 typing = [
-    "boto3-stubs[lambda,sqs,secretsmanager]",
+    "boto3-stubs[lambda,sqs,ssm]",
     "mypy",
     "pytest",
     "tomli",
