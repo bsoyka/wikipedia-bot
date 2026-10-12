@@ -16,7 +16,7 @@ class _StubTask(Task):
     number = 123
     edit_summary_text = 'Stub edit'
 
-    def discover(self, cursor: str | None = None) -> Iterator[Discovered]:  # noqa: PLR6301
+    def discover(self, cursor: str | None = None) -> Iterator[Discovered]:  # ruff: ignore[no-self-use]
         """Yield nothing; this stub is only used for make_edit_summary.
 
         Returns:
@@ -25,7 +25,7 @@ class _StubTask(Task):
         del cursor
         return iter(())
 
-    def handle(self, page: pywikibot.Page) -> str | None:  # noqa: PLR6301
+    def handle(self, page: pywikibot.Page) -> str | None:  # ruff: ignore[no-self-use]
         """Return no edit; this stub is only used for make_edit_summary."""
         del page
         return None

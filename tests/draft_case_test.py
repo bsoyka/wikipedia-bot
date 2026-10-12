@@ -68,7 +68,7 @@ def test_handle_fixes_miscapitalized_link(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(
         draft_case,
         '_resolve_redirect_target',
-        lambda site, title: '2020 NFL draft',  # noqa: ARG005
+        lambda site, title: '2020 NFL draft',  # ruff: ignore[unused-lambda-argument]
     )
 
     task = DraftCaseTask()
@@ -86,7 +86,7 @@ def test_handle_leaves_non_redirect_links_alone(
     monkeypatch.setattr(
         draft_case,
         '_resolve_redirect_target',
-        lambda site, title: None,  # noqa: ARG005
+        lambda site, title: None,  # ruff: ignore[unused-lambda-argument]
     )
 
     task = DraftCaseTask()
