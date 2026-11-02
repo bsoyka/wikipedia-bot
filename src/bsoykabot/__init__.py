@@ -15,6 +15,6 @@ from importlib.metadata import version
 # submodules, not sibling modules like bsoykabot.runner and
 # bsoykabot.aws.handlers that both import pywikibot directly at module
 # scope -- which is exactly the bug this fixes.
-from bsoykabot import wiki  # noqa: F401
+from bsoykabot import wiki  # ruff: ignore[unused-import]
 
 __version__ = version('bsoykabot')

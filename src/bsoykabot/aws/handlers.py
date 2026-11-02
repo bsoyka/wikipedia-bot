@@ -220,7 +220,7 @@ def process(event: SQSEvent, context: LambdaContext) -> BatchResponse:
                 emit_page_outcome(task.name, 'edited')
             else:
                 emit_page_outcome(task.name, 'blocked')
-        except Exception:  # noqa: BLE001 -- see the docstring above
+        except Exception:  # ruff: ignore[blind-except] -- see the docstring above
             logger.exception(f'Failed to process {message["title"]!r} ({task.name})')
             emit_page_outcome(task.name, 'error')
             failures.append({'itemIdentifier': record['messageId']})

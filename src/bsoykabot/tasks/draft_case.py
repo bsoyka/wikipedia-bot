@@ -79,7 +79,7 @@ def _resolve_redirect_target(site: APISite, title: str) -> str | None:
     return None
 
 
-def _fix_links_in_page(page: pywikibot.Page) -> str:  # noqa: C901
+def _fix_links_in_page(page: pywikibot.Page) -> str:  # ruff: ignore[complex-structure]
     """Fix miscapitalized links to "NFL Draft" redirects in a page.
 
     Returns:
@@ -157,7 +157,7 @@ class DraftCaseTask(Task):
     number = 3
     edit_summary_text = 'Fixing miscapitalization of NFL draft links'
 
-    def discover(  # noqa: PLR6301 -- part of the Task interface, not a free function
+    def discover(  # ruff: ignore[no-self-use] -- part of the Task interface, not a free function
         self,
         cursor: str | None = None,
     ) -> Iterator[Discovered]:
@@ -197,7 +197,7 @@ class DraftCaseTask(Task):
 
             pending = remaining
 
-    def handle(self, page: pywikibot.Page) -> str | None:  # noqa: PLR6301
+    def handle(self, page: pywikibot.Page) -> str | None:  # ruff: ignore[no-self-use]
         """Fix miscapitalized NFL draft links in a page.
 
         Args:
