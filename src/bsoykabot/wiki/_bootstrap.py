@@ -17,7 +17,7 @@ from pathlib import Path
 
 import boto3
 
-_DEFAULT_PYWIKIBOT_DIR = '/tmp/pywikibot'  # noqa: S108 -- the only writable path on Lambda
+_DEFAULT_PYWIKIBOT_DIR = '/tmp/pywikibot'  # ruff: ignore[hardcoded-temp-file] -- the only writable path on Lambda
 _PRIVATE_FILE_MODE = stat.S_IRUSR | stat.S_IWUSR  # 0o600, as Pywikibot requires
 
 
