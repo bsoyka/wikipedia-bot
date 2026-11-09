@@ -85,4 +85,4 @@ def _emit(task_name: str, metrics: dict[str, int]) -> None:
         'Task': task_name,
         **metrics,
     }
-    print(json.dumps(document), file=sys.stdout)  # noqa: T201 -- EMF needs raw stdout
+    print(json.dumps(document), file=sys.stdout)  # ruff: ignore[print] -- EMF needs raw stdout
