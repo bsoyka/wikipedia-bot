@@ -102,7 +102,7 @@ class ProxyUrlsTask(Task):
     number = 2
     edit_summary_text = 'Replacing [[WP:TWL|TWL]] proxy links'
 
-    def discover(  # noqa: PLR6301 -- part of the Task interface, not a free function
+    def discover(  # ruff: ignore[no-self-use] -- part of the Task interface, not a free function
         self,
         cursor: str | None = None,
     ) -> Iterator[Discovered]:
@@ -123,7 +123,7 @@ class ProxyUrlsTask(Task):
         ):
             yield Discovered(title=page.title())
 
-    def handle(self, page: pywikibot.Page) -> str | None:  # noqa: PLR6301
+    def handle(self, page: pywikibot.Page) -> str | None:  # ruff: ignore[no-self-use]
         """Replace proxy URLs in a page with their original domains.
 
         Args:
